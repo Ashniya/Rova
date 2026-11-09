@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
@@ -6,7 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { SidebarProvider } from './context/SidebarContext';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
-import SplashScreen from './components/SplashScreen';
+import RovaIntro from './components/RovaIntro';
 import LandingPage from './pages/LandingPage';
 import OperationsDashboard from './pages/OperationsDashboard';
 import BookingsScreen from './pages/BookingsScreen';
@@ -26,11 +26,11 @@ const queryClient = new QueryClient({
   },
 });
 
-// Operations Layout with Collapsible Sidebar and Dark/Light Mode support
+// Operations Layout with Collapsible Sidebar and Design System
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="flex min-h-screen bg-[#F8F9FC] dark:bg-[#0F0619] text-slate-800 dark:text-slate-100 font-sans selection:bg-coral-500 selection:text-white transition-colors duration-200">
-      {/* Dark Purple Sidebar (Expandable / Minimizable) */}
+    <div className="flex min-h-screen bg-[#FBF9F7] dark:bg-[#120E0C] text-[#1C1917] dark:text-stone-100 font-sans selection:bg-[#B91C1C] selection:text-white transition-colors duration-200">
+      {/* Dark Stone Sidebar (Expandable / Minimizable) */}
       <Sidebar />
 
       {/* Main Application Area */}
@@ -48,15 +48,15 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
 };
 
 export const App: React.FC = () => {
-  const [showSplash, setShowSplash] = useState<boolean>(() => {
-    // Show splash screen on first session load
-    const seen = sessionStorage.getItem('rova_splash_shown');
+  const [showIntro, setShowIntro] = useState<boolean>(() => {
+    // Show 3-second MaskedHeading intro on first session load
+    const seen = sessionStorage.getItem('rova_intro_seen');
     return !seen;
   });
 
-  const handleSplashFinish = () => {
-    sessionStorage.setItem('rova_splash_shown', 'true');
-    setShowSplash(false);
+  const handleIntroComplete = () => {
+    sessionStorage.setItem('rova_intro_seen', 'true');
+    setShowIntro(false);
   };
 
   return (
@@ -64,15 +64,22 @@ export const App: React.FC = () => {
       <AuthProvider>
         <ThemeProvider>
           <SidebarProvider>
-            {showSplash && <SplashScreen onFinish={handleSplashFinish} minDuration={1900} />}
+            {/* 3-second MaskedHeading Rova Intro Animation */}
+            {showIntro && <RovaIntro onComplete={handleIntroComplete} durationSeconds={3} />}
 
             <Router>
               <Routes>
-                {/* Public Transit Landing Page with animations matching the theme */}
+                {/* Landing Page is the default entry point */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/landing" element={<LandingPage />} />
 
-                {/* Operations Dashboard matching Image 1 */}
+                {/* Replay Intro Route */}
+                <Route
+                  path="/intro"
+                  element={<RovaIntro onComplete={() => (window.location.href = '/')} durationSeconds={3} />}
+                />
+
+                {/* Operations Dashboard */}
                 <Route
                   path="/dashboard"
                   element={
@@ -82,7 +89,7 @@ export const App: React.FC = () => {
                   }
                 />
 
-                {/* Seat Selection & Booking Screen matching Image 2 */}
+                {/* Seat Selection & Booking Screen */}
                 <Route
                   path="/bookings"
                   element={

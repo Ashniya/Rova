@@ -41,13 +41,13 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className={`bg-sidebar-bg min-h-screen text-slate-300 flex flex-col justify-between shrink-0 border-r border-sidebar-border select-none transition-all duration-300 ease-in-out relative z-30 ${
+      className={`bg-[#1C1917] min-h-screen text-stone-300 flex flex-col justify-between shrink-0 border-r border-[#2E2A27] select-none transition-all duration-300 ease-in-out relative z-30 ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
       <div>
         {/* Brand Header */}
-        <div className={`border-b border-sidebar-border transition-all duration-300 ${collapsed ? 'p-3 flex flex-col items-center' : 'p-6'}`}>
+        <div className={`border-b border-[#2E2A27] transition-all duration-300 ${collapsed ? 'p-3 flex flex-col items-center' : 'p-6'}`}>
           {collapsed ? (
             /* Minimized state: Rova title at top with expand button */
             <div className="flex flex-col items-center gap-3 w-full">
@@ -56,41 +56,46 @@ export const Sidebar: React.FC = () => {
                 title="Rova • Where routes become journeys"
                 className="text-center group"
               >
-                <span className="text-xl font-black tracking-tight text-white group-hover:text-coral-400 transition-colors block">
+                <span className="text-xl font-black tracking-tight text-white group-hover:text-[#B91C1C] transition-colors block">
                   Rova
                 </span>
-                <span className="text-[8px] font-bold tracking-widest text-coral-400 uppercase block -mt-0.5">
+                <span className="text-[8px] font-bold tracking-widest text-[#B91C1C] uppercase block -mt-0.5">
                   Transit
                 </span>
               </Link>
               <button
                 onClick={toggleSidebar}
                 title="Expand Sidebar"
-                className="p-1.5 rounded-xl bg-sidebar-card hover:bg-sidebar-hover text-slate-300 hover:text-white border border-sidebar-border transition-all"
+                className="p-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 transition-all cursor-pointer"
               >
-                <ChevronRight className="w-4 h-4 text-coral-400" />
+                <ChevronRight className="w-4 h-4 text-[#B91C1C]" />
               </button>
             </div>
           ) : (
             /* Expanded state: Full Rova title + Tagline + Minimize button */
             <div className="flex items-start justify-between">
               <Link to="/landing" className="flex flex-col group">
-                <span className="text-3xl font-black tracking-tight text-white group-hover:text-coral-400 transition-colors">
-                  Rova
-                </span>
-                <span className="text-[10px] font-bold tracking-wide text-white/90 mt-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-[#B91C1C] flex items-center justify-center text-white">
+                    <Bus className="w-4 h-4" />
+                  </div>
+                  <span className="text-2xl font-black tracking-tight text-white group-hover:text-[#FCA5A5] transition-colors">
+                    Rova
+                  </span>
+                </div>
+                <span className="text-[10px] font-bold tracking-wide text-stone-300 mt-2">
                   Where routes become journeys
                 </span>
-                <span className="text-[9px] tracking-widest text-slate-400 uppercase mt-0.5 font-semibold">
-                  TRANSIT CONTROL
+                <span className="text-[9px] tracking-widest text-stone-500 uppercase mt-0.5 font-semibold">
+                  TRANSIT CONTROL HUD
                 </span>
               </Link>
               <button
                 onClick={toggleSidebar}
                 title="Minimize Sidebar"
-                className="p-1.5 rounded-xl bg-sidebar-card hover:bg-sidebar-hover text-slate-300 hover:text-white border border-sidebar-border transition-all mt-1"
+                className="p-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white border border-stone-700 transition-all cursor-pointer mt-1"
               >
-                <ChevronLeft className="w-4 h-4 text-slate-400 hover:text-white" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -98,7 +103,7 @@ export const Sidebar: React.FC = () => {
 
         {/* Section Label */}
         <div className={`pt-4 pb-2 ${collapsed ? 'text-center' : 'px-6'}`}>
-          <span className="text-[9px] font-bold tracking-widest text-slate-400 uppercase">
+          <span className="text-[9px] font-bold tracking-widest text-stone-500 uppercase">
             {collapsed ? 'OPS' : 'OPERATIONS'}
           </span>
         </div>
@@ -120,11 +125,11 @@ export const Sidebar: React.FC = () => {
                     : 'gap-3.5 px-4 py-3'
                 } ${
                   active
-                    ? 'bg-sidebar-active text-white border border-purple-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-sidebar-hover'
+                    ? 'bg-[#B91C1C] text-white shadow-xs'
+                    : 'text-stone-400 hover:text-white hover:bg-stone-800/80'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-coral-400' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-stone-400'}`} />
                 {!collapsed && <span className="truncate">{item.label}</span>}
               </Link>
             );
@@ -133,29 +138,29 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Fleet Dispatch Status Pill at the bottom */}
-      <div className={`m-3 transition-all duration-300 ${collapsed ? 'p-2 text-center' : 'p-4'} bg-sidebar-card/80 border border-sidebar-border rounded-2xl`}>
+      <div className={`m-3 transition-all duration-300 ${collapsed ? 'p-2 text-center' : 'p-4'} bg-stone-900 border border-stone-800 rounded-2xl`}>
         {collapsed ? (
-          <div className="flex flex-col items-center gap-1" title="Fleet Dispatch 99.1% Active">
+          <div className="flex flex-col items-center gap-1" title="Fleet Dispatch 99.8% Active">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
-            <span className="text-[9px] font-mono font-bold text-brand-400">99%</span>
+            <span className="text-[9px] font-mono font-bold text-emerald-400">99.8%</span>
           </div>
         ) : (
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
                 <span className="text-[11px] font-bold text-white tracking-wide">Fleet Dispatch</span>
               </div>
-              <span className="text-[10px] font-mono text-brand-400 font-bold">99.1%</span>
+              <span className="text-[10px] font-mono text-emerald-400 font-bold">99.8%</span>
             </div>
-            <p className="text-[10px] text-slate-400 leading-tight">
-              48 of 52 coaches transmitting active GPS telemetry.
+            <p className="text-[10px] text-stone-400 leading-tight">
+              51 of 52 coaches transmitting active GPS telemetry.
             </p>
           </div>
         )}

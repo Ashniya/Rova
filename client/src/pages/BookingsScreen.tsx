@@ -176,7 +176,7 @@ export const BookingsScreen: React.FC = () => {
             onClick={() => setActiveSubTab('buy')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-black transition-all ${
               activeSubTab === 'buy'
-                ? 'bg-coral-500 text-white shadow-xs'
+                ? 'bg-[#B91C1C] text-white shadow-xs'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
@@ -206,7 +206,7 @@ export const BookingsScreen: React.FC = () => {
         <div className="flex items-center gap-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 px-4 py-2 rounded-2xl shadow-xs">
           <span className="text-slate-400 font-mono text-[10px] uppercase">TERMINAL:</span>
           <span className="text-slate-900 font-black">Dhaka Kallayanpur</span>
-          <span className="text-coral-500 font-bold">──▶</span>
+          <span className="text-[#B91C1C] font-bold">──▶</span>
           <span className="text-slate-900 font-black">Rangpur Central</span>
           <span className="text-slate-400 ml-2">Today, 24 Oct</span>
         </div>
@@ -219,7 +219,7 @@ export const BookingsScreen: React.FC = () => {
           {/* Header & Line Status */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-bold text-coral-600">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#991B1B]">
                 <ArrowLeft className="w-4 h-4 cursor-pointer hover:-translate-x-1 transition-transform" />
                 <span className="uppercase tracking-wider">VIP LUXURY COACH • Line 1713-Rangpur</span>
               </div>
@@ -304,7 +304,7 @@ export const BookingsScreen: React.FC = () => {
                   <div className="flex-1 border-b-2 border-dashed border-slate-300 relative">
                     <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-xs">🚌</span>
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-coral-500"></div>
+                  <div className="w-2 h-2 rounded-full bg-[#B91C1C]"></div>
                 </div>
                 <span className="text-[10px] text-slate-400 mt-1">
                   Direct Hwy via Bangabandhu Bridge
@@ -314,7 +314,7 @@ export const BookingsScreen: React.FC = () => {
               {/* Destination */}
               <div className="sm:col-span-4 sm:text-right">
                 <div className="flex items-center sm:justify-end gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  <span className="w-2 h-2 rounded-full bg-coral-500"></span>
+                  <span className="w-2 h-2 rounded-full bg-[#B91C1C]"></span>
                   <span>DROPPING POINT</span>
                 </div>
                 <h4 className="text-base font-black text-slate-900 mt-1">
@@ -322,7 +322,7 @@ export const BookingsScreen: React.FC = () => {
                 </h4>
                 <div className="flex items-center sm:justify-end gap-2 mt-0.5">
                   <span className="text-lg font-black text-slate-900">12:30 AM</span>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 bg-coral-50 text-coral-600 rounded">
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 bg-red-50 text-[#991B1B] rounded">
                     +1 Day
                   </span>
                 </div>
@@ -333,7 +333,7 @@ export const BookingsScreen: React.FC = () => {
           {/* 3 Key Feature Pills matching Image 2 */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-orange-50 text-coral-600 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-orange-50 text-[#991B1B] flex items-center justify-center shrink-0">
                 <Luggage className="w-5 h-5" />
               </div>
               <div>
@@ -370,7 +370,7 @@ export const BookingsScreen: React.FC = () => {
             {/* Color Legend matching Image 2 */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 text-xs font-bold">
               <div className="flex items-center gap-1.5">
-                <div className="w-3.5 h-3.5 rounded bg-coral-500"></div>
+                <div className="w-3.5 h-3.5 rounded bg-[#B91C1C]"></div>
                 <span className="text-slate-600">Sold</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -400,7 +400,7 @@ export const BookingsScreen: React.FC = () => {
                 <select
                   value={boardingCounter}
                   onChange={(e) => setBoardingCounter(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-coral-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#B91C1C]"
                 >
                   <option value="Dhaka-Kallayanpur (05:30 PM)">Dhaka-Kallayanpur</option>
                   <option value="Gabtoli Central (06:00 PM)">Gabtoli Central</option>
@@ -415,7 +415,7 @@ export const BookingsScreen: React.FC = () => {
                 <select
                   value={droppingCounter}
                   onChange={(e) => setDroppingCounter(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-coral-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-[#B91C1C]"
                 >
                   <option value="Rangpur Modern Mo (12:30 AM)">Rangpur Modern Mo</option>
                   <option value="KamalKachna (01:00 AM)">KamalKachna</option>
@@ -459,10 +459,10 @@ export const BookingsScreen: React.FC = () => {
                           isSelected
                             ? 'bg-brand-500 text-white shadow-xs scale-105'
                             : isSold
-                            ? 'bg-coral-500 text-white cursor-not-allowed shadow-xs'
+                            ? 'bg-[#B91C1C] text-white cursor-not-allowed shadow-xs'
                             : isLocked
                             ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                            : 'bg-white text-slate-700 border border-slate-200 hover:border-coral-500 hover:shadow-xs'
+                            : 'bg-white text-slate-700 border border-slate-200 hover:border-[#B91C1C] hover:shadow-xs'
                         }`}
                         title={`Seat ${seatCode}`}
                       >
@@ -519,7 +519,7 @@ export const BookingsScreen: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <span className="text-[10px] uppercase font-bold text-slate-400">CABIN TIER</span>
-                  <p className="text-xs font-black text-coral-600">E-Class Luxury</p>
+                  <p className="text-xs font-black text-[#991B1B]">E-Class Luxury</p>
                 </div>
               </div>
 
@@ -554,7 +554,7 @@ export const BookingsScreen: React.FC = () => {
                 type="button"
                 disabled={selectedSeatCodes.length === 0}
                 onClick={() => setIsCheckoutOpen(true)}
-                className="w-full py-4 bg-coral-500 hover:bg-coral-600 active:scale-[0.99] text-white font-black text-sm rounded-2xl shadow-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full py-4 bg-[#B91C1C] hover:bg-[#991B1B] active:scale-[0.99] text-white font-black text-sm rounded-2xl shadow-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
               >
                 <span>Confirm & Proceed to Payment</span>
                 <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -577,7 +577,7 @@ export const BookingsScreen: React.FC = () => {
               <div>
                 <h3 className="text-lg font-black text-slate-900">Complete Passenger Checkout</h3>
                 <p className="text-xs text-slate-500">
-                  Allocating Seats: <strong className="text-coral-500">{selectedSeatCodes.join(', ')}</strong>
+                  Allocating Seats: <strong className="text-[#B91C1C]">{selectedSeatCodes.join(', ')}</strong>
                 </p>
               </div>
               <button
@@ -604,7 +604,7 @@ export const BookingsScreen: React.FC = () => {
                     required
                     value={primaryName}
                     onChange={(e) => setPrimaryName(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-coral-500"
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-[#B91C1C]"
                   />
                 </div>
               </div>
@@ -619,7 +619,7 @@ export const BookingsScreen: React.FC = () => {
                       required
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-coral-500"
+                      className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-[#B91C1C]"
                     />
                   </div>
                 </div>
@@ -633,7 +633,7 @@ export const BookingsScreen: React.FC = () => {
                       required
                       value={contactPhone}
                       onChange={(e) => setContactPhone(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-coral-500"
+                      className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-[#B91C1C]"
                     />
                   </div>
                 </div>
@@ -650,7 +650,7 @@ export const BookingsScreen: React.FC = () => {
                       onClick={() => setPaymentMethod(m)}
                       className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
                         paymentMethod === m
-                          ? 'border-coral-500 bg-coral-50 text-coral-600'
+                          ? 'border-[#B91C1C] bg-red-50 text-[#991B1B]'
                           : 'border-slate-200 bg-white text-slate-700'
                       }`}
                     >
@@ -668,7 +668,7 @@ export const BookingsScreen: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-3 bg-coral-500 hover:bg-coral-600 text-white font-black text-xs rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+                  className="px-6 py-3 bg-[#B91C1C] hover:bg-[#991B1B] text-white font-black text-xs rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? 'Confirming Seats...' : 'Authorize & Issue PNR'}
                 </button>

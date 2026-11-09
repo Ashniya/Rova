@@ -257,7 +257,7 @@ export const OperationsDashboard: React.FC = () => {
 
           <button
             onClick={() => navigate('/schedule')}
-            className="flex items-center gap-2 px-5 py-2.5 bg-coral-500 hover:bg-coral-600 text-white rounded-2xl text-xs font-black shadow-sm transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#B91C1C] hover:bg-[#991B1B] text-white rounded-2xl text-xs font-black shadow-xs transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>+ Add Schedule</span>
@@ -267,27 +267,27 @@ export const OperationsDashboard: React.FC = () => {
 
       {/* 4 Metric KPI Cards matching Image 1 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* Gross Revenue Card (Dark Purple) */}
-        <div className="bg-gradient-to-br from-sidebar-bg to-sidebar-card text-white rounded-3xl p-6 shadow-sm border border-sidebar-border relative overflow-hidden">
+        {/* Gross Revenue Card (Dark Stone Neutral) */}
+        <div className="bg-gradient-to-br from-[#1C1917] to-[#292524] text-white rounded-3xl p-6 shadow-xs border border-[#2E2A27] relative overflow-hidden">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-purple-200">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-stone-300">
               GROSS REVENUE (TODAY)
             </span>
             <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-              <DollarSign className="w-4 h-4 text-purple-200" />
+              <DollarSign className="w-4 h-4 text-stone-300" />
             </div>
           </div>
           <p className="text-3xl font-black tracking-tight">$48,250</p>
           <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-2">
             <span>↑ +12.4%</span>
-            <span className="text-[11px] font-normal text-purple-300">vs last Friday</span>
+            <span className="text-[11px] font-normal text-stone-400">vs last Friday</span>
           </div>
         </div>
 
-        {/* Confirmed Tickets Card (Coral-Orange Gradient without glowing blur) */}
-        <div className="bg-gradient-to-br from-coral-500 to-coral-600 text-white rounded-3xl p-6 shadow-sm relative overflow-hidden">
+        {/* Confirmed Tickets Card (Primary Red Gradient #B91C1C to #991B1B) */}
+        <div className="bg-gradient-to-br from-[#B91C1C] to-[#991B1B] text-white rounded-3xl p-6 shadow-xs relative overflow-hidden">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-orange-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-red-100">
               CONFIRMED TICKETS
             </span>
             <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
@@ -410,7 +410,7 @@ export const OperationsDashboard: React.FC = () => {
                       onClick={() => setSelectedCoachId(coach.id)}
                       className={`p-4 rounded-2xl transition-all cursor-pointer space-y-2 border ${
                         isSelected
-                          ? 'bg-sidebar-bg text-white border-coral-500/50 shadow-sm'
+                          ? 'bg-sidebar-bg text-white border-[#B91C1C]/50 shadow-sm'
                           : 'bg-slate-50 dark:bg-purple-950/30 hover:bg-slate-100 dark:hover:bg-purple-950/60 border-slate-200 dark:border-purple-900/40 text-slate-700 dark:text-slate-300'
                       }`}
                     >
@@ -421,7 +421,7 @@ export const OperationsDashboard: React.FC = () => {
                         <span
                           className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${
                             coach.code === 'EXP-884'
-                              ? 'bg-coral-500 text-white'
+                              ? 'bg-[#B91C1C] text-white'
                               : 'bg-slate-200 dark:bg-purple-900 text-slate-700 dark:text-slate-200 font-mono'
                           }`}
                         >
@@ -430,7 +430,7 @@ export const OperationsDashboard: React.FC = () => {
                       </div>
                       <div className="flex items-center justify-between text-xs">
                         <span className="flex items-center gap-1.5 truncate pr-2">
-                          <Navigation className="w-3.5 h-3.5 text-coral-400 shrink-0" />
+                          <Navigation className="w-3.5 h-3.5 text-[#F87171] shrink-0" />
                           <span className="truncate">{coach.route}</span>
                         </span>
                         <span
@@ -475,7 +475,7 @@ export const OperationsDashboard: React.FC = () => {
 
                   {/* Route stop callout */}
                   <div className="p-4 bg-sidebar-bg text-white rounded-2xl flex items-center gap-3 shadow-sm my-4 border border-sidebar-border">
-                    <div className="w-10 h-10 rounded-xl bg-coral-500 flex items-center justify-center text-white shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-[#B91C1C] flex items-center justify-center text-white shrink-0">
                       <Bus className="w-5 h-5" />
                     </div>
                     <div>
@@ -488,7 +488,7 @@ export const OperationsDashboard: React.FC = () => {
                 {/* Telemetry metrics bar */}
                 <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200 dark:border-purple-900/40 text-center text-xs font-bold text-slate-700 dark:text-slate-200">
                   <div className="flex items-center justify-center gap-1">
-                    <span className="text-coral-500">⚡</span>
+                    <span className="text-[#B91C1C]">⚡</span>
                     <span>{activeCoach.speed}</span>
                   </div>
                   <div className="flex items-center justify-center gap-1">
@@ -560,7 +560,7 @@ export const OperationsDashboard: React.FC = () => {
                     <tr key={item.id} className="hover:bg-slate-50/80 dark:hover:bg-purple-950/40 transition-colors">
                       <td className="py-3.5 px-3">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-full bg-orange-100 text-coral-700 font-bold text-xs flex items-center justify-center">
+                          <div className="w-7 h-7 rounded-full bg-orange-100 text-[#B91C1C] font-bold text-xs flex items-center justify-center">
                             {item.initials}
                           </div>
                           <div>
@@ -638,7 +638,7 @@ export const OperationsDashboard: React.FC = () => {
                 </div>
                 <button
                   onClick={() => navigate('/bookings')}
-                  className="w-8 h-8 rounded-full bg-coral-500 hover:bg-coral-600 text-white flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-[#B91C1C] hover:bg-[#991B1B] text-white flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
                   title="Book This Fleet"
                 >
                   <ArrowUpRight className="w-4 h-4" />
@@ -648,7 +648,7 @@ export const OperationsDashboard: React.FC = () => {
 
             <div className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 pt-1">
               <span>🛏️ 32 Ultra-Wide Berths</span>
-              <span className="text-coral-500 font-black">99.4% User Rating</span>
+              <span className="text-[#B91C1C] font-black">99.4% User Rating</span>
             </div>
           </div>
 
@@ -663,7 +663,7 @@ export const OperationsDashboard: React.FC = () => {
                 onClick={() => navigate('/schedule')}
                 className="flex items-center gap-1 text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-purple-950/60 hover:bg-slate-200 dark:hover:bg-purple-900/60 px-3 py-1.5 rounded-xl transition-colors cursor-pointer"
               >
-                <Calendar className="w-3.5 h-3.5 text-coral-400" />
+                <Calendar className="w-3.5 h-3.5 text-[#F87171]" />
                 <span>Plan</span>
               </button>
             </div>
@@ -685,7 +685,7 @@ export const OperationsDashboard: React.FC = () => {
                   onClick={() => setActiveCalendarDate(d.date)}
                   className={`py-2 rounded-xl text-xs flex flex-col items-center transition-all cursor-pointer ${
                     activeCalendarDate === d.date
-                      ? 'bg-sidebar-bg dark:bg-coral-500 text-white font-black shadow-xs'
+                      ? 'bg-sidebar-bg dark:bg-[#B91C1C] text-white font-black shadow-xs'
                       : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-purple-950/50'
                   }`}
                 >
@@ -698,20 +698,20 @@ export const OperationsDashboard: React.FC = () => {
             {/* Scheduled Transit Run Cards */}
             <div className="space-y-3">
               {/* Next Departure */}
-              <div className="p-4 bg-coral-50/70 dark:bg-coral-950/20 border border-coral-200 dark:border-coral-900/40 rounded-2xl space-y-1.5">
+              <div className="p-4 bg-red-50/70 dark:bg-coral-950/20 border border-red-200 dark:border-red-900/40 rounded-2xl space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase text-coral-600 dark:text-coral-400 tracking-wider">
+                  <span className="text-[10px] font-black uppercase text-[#991B1B] dark:text-[#F87171] tracking-wider">
                     NEXT DEPARTURE
                   </span>
-                  <span className="px-2 py-0.5 rounded-md bg-coral-500 text-white font-black text-[10px]">
+                  <span className="px-2 py-0.5 rounded-md bg-[#B91C1C] text-white font-black text-[10px]">
                     07:00 AM
                   </span>
                 </div>
                 <p className="text-xs font-black text-slate-900 dark:text-white">Chattogram Express</p>
                 <p className="text-[11px] text-slate-600 dark:text-slate-300">Dhaka Bay 02 ──▶ Dampara Station</p>
-                <div className="pt-2 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 border-t border-coral-200/80 dark:border-coral-900/40">
+                <div className="pt-2 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 border-t border-red-200/80 dark:border-red-900/40">
                   <span>Coach Plate: DHA-8931</span>
-                  <span className="font-bold text-coral-600 dark:text-coral-400">Boarding in 12m</span>
+                  <span className="font-bold text-[#991B1B] dark:text-[#F87171]">Boarding in 12m</span>
                 </div>
               </div>
 
