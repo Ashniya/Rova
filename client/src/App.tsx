@@ -7,15 +7,14 @@ import { SidebarProvider } from './context/SidebarContext';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import RovaIntro from './components/RovaIntro';
-import AuthModal from './components/AuthModal';
 import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
 import OperationsDashboard from './pages/OperationsDashboard';
 import BookingsScreen from './pages/BookingsScreen';
 import FleetRoutesScreen from './pages/FleetRoutesScreen';
 import ScheduleScreen from './pages/ScheduleScreen';
 import CustomerManagementScreen from './pages/CustomerManagementScreen';
 import AnalyticsScreen from './pages/AnalyticsScreen';
-import AdminPage from './pages/AdminPage';
 import PassengerDashboard from './pages/PassengerDashboard';
 import DriverOwnerDashboard from './pages/DriverOwnerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -42,8 +41,8 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
         {/* Top Bar with Search, Dark Mode Toggle, Notifications & Profile */}
         <TopBar />
 
-        {/* Page Content */}
-        <main className="flex-1 pb-12">
+        {/* Page Content with smooth fade-in animation */}
+        <main className="flex-1 pb-12 animate-fadeIn">
           {children}
         </main>
       </div>
@@ -74,18 +73,8 @@ const ProtectedRoute: React.FC<{
       (requiredRole === 'ADMIN' && user.role === 'ADMIN'));
 
   if (!hasAccess) {
-    return (
-      <div className="min-h-screen bg-[#1C1917] flex items-center justify-center p-4">
-        <AuthModal
-          isOpen={true}
-          defaultRole={requiredRole}
-          onClose={() => {
-            window.location.href = '/landing';
-          }}
-          onSuccess={() => {}}
-        />
-      </div>
-    );
+    const roleParam = requiredRole === 'DRIVER' ? 'driver' : requiredRole === 'ADMIN' ? 'admin' : 'passenger';
+    return <Navigate to={`/login?role=${roleParam}`} replace />;
   }
 
   return <>{children}</>;
@@ -93,7 +82,12 @@ const ProtectedRoute: React.FC<{
 
 export const AppContent: React.FC = () => {
   // Loading page shows on every initial run/load, then transitions to landing page
-  const [showIntro, setShowIntro] = useState<boolean>(true);
+  const [showIntro, setShowIntro] = useState<boolean>(() => {
+    // Check if initial route is / or /landing and not an internal navigation
+    const path = window.location.pathname;
+    const isDirectPortal = path.startsWith('/login') || path.startsWith('/driver') || path.startsWith('/admin') || path.startsWith('/passenger');
+    return !isDirectPortal;
+  });
 
   const handleIntroComplete = () => {
     setShowIntro(false);
@@ -109,6 +103,9 @@ export const AppContent: React.FC = () => {
           {/* Landing Page is the default entry point */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/landing" element={<LandingPage />} />
+
+          {/* Dedicated Full-Screen Login Page matching Figma Design */}
+          <Route path="/login" element={<LoginPage />} />
 
           {/* Replay Intro Route */}
           <Route

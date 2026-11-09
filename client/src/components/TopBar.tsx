@@ -13,17 +13,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import AuthModal from './AuthModal';
-
-interface TopBarProps {
-  onSearch?: (term: string) => void;
-}
-
 export const TopBar: React.FC<TopBarProps> = ({ onSearch }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
-  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
   // Mock notifications for real-time dispatch events
@@ -199,7 +192,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onSearch }) => {
             </div>
           ) : (
             <button
-              onClick={() => setAuthModalOpen(true)}
+              onClick={() => {
+                window.location.href = '/login';
+              }}
               className="flex items-center gap-2 px-4 py-2 bg-[#B91C1C] hover:bg-[#991B1B] text-white rounded-full text-xs font-bold transition-all cursor-pointer shadow-xs"
             >
               <UserIcon className="w-3.5 h-3.5" />
@@ -208,12 +203,6 @@ export const TopBar: React.FC<TopBarProps> = ({ onSearch }) => {
           )}
         </div>
       </header>
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-      />
     </>
   );
 };

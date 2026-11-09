@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Bus,
   ArrowRight,
   Star,
-  Shield,
   Compass,
-  Radio,
-  Wifi,
-  Coffee,
-  CheckCircle2,
-  Clock,
   MapPin,
   ChevronRight,
-  Phone,
-  User,
   ExternalLink,
+  ShieldCheck,
+  Calendar,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import AuthModal from '../components/AuthModal';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+
+  // Auto-logout when returning to the landing page, as specified in requirements
+  useEffect(() => {
+    if (isAuthenticated) {
+      logout();
+    }
+  }, [isAuthenticated, logout]);
 
   // Top popular Punjab & Northern India overland routes
   const routes = [
@@ -43,7 +43,7 @@ export const LandingPage: React.FC = () => {
       id: 'DEL-ASR',
       title: 'Delhi ──▶ Amritsar Golden Corridor',
       corridor: 'Kashmere Gate ISBT to Golden Temple Gateway',
-      image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
+      image: '/images/coach-exterior.jpg',
       price: '₹950',
       duration: '7h 30m',
       timing: 'Daily 21:30 (Overnight Sleeper)',
@@ -54,7 +54,7 @@ export const LandingPage: React.FC = () => {
       id: 'IXC-SML',
       title: 'Chandigarh ──▶ Shimla Hills Liner',
       corridor: 'Himalayan Expressway Observatory Line',
-      image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+      image: '/images/coach-interior.jpg',
       price: '₹550',
       duration: '3h 45m',
       timing: 'Daily 07:15 & 12:30',
@@ -65,7 +65,7 @@ export const LandingPage: React.FC = () => {
       id: 'LDH-DEL',
       title: 'Ludhiana ──▶ Delhi IGI Airport Direct',
       corridor: 'Non-stop Sherpur Chowk to Terminal 3',
-      image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+      image: '/images/coach-exterior.jpg',
       price: '₹850',
       duration: '5h 00m',
       timing: 'Every 2 Hours (24x7)',
@@ -74,26 +74,18 @@ export const LandingPage: React.FC = () => {
     },
   ];
 
-  // User must log in before booking as instructed
+  // User must log in before booking: leads directly to dedicated /login page
   const handleInitiateBooking = (routeId?: string) => {
     if (!isAuthenticated) {
-      setPendingRoute(routeId || 'ASR-IXC');
-      setAuthModalOpen(true);
+      navigate('/login?role=passenger');
       return;
     }
-    // If logged in, navigate directly to seat selection & dashboard
-    navigate(routeId ? `/bookings?route=${routeId}` : '/bookings');
-  };
-
-  const handleLoginSuccess = () => {
-    setAuthModalOpen(false);
-    // After login, navigate to the booking seat map or dashboard
-    navigate(pendingRoute ? `/bookings?route=${pendingRoute}` : '/dashboard');
+    navigate('/passenger');
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF9F7] text-[#1C1917] font-sans selection:bg-[#B91C1C] selection:text-white">
-      {/* 1. TOP NAVBAR matching Image */}
+    <div className="min-h-screen bg-[#FBF9F7] text-[#1C1917] font-sans selection:bg-[#B91C1C] selection:text-white animate-fadeIn">
+      {/* 1. TOP NAVBAR matching Image 3 */}
       <header className="bg-white/95 backdrop-blur-md border-b border-[#E7E2DA] sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Brand Logo & Name */}
@@ -102,78 +94,52 @@ export const LandingPage: React.FC = () => {
               <Bus className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <span className="text-2xl font-black tracking-tight text-[#1C1917]">Rova</span>
-              <p className="text-[9px] font-bold tracking-[0.2em] text-[#78716C] uppercase -mt-1">
-                TRANSIT ELITE • PUNJAB
+              <span className="text-2xl font-black tracking-tight text-[#1C1917] block leading-none">
+                ROVA
+              </span>
+              <p className="text-[10px] font-black tracking-widest text-[#B91C1C] uppercase mt-1">
+                EXPEDITIONS &amp; FLEET
               </p>
             </div>
           </div>
 
-          {/* Navigation Links with 3 Dedicated Portals */}
+          {/* Navigation Links with Dedicated Portals */}
           <nav className="hidden lg:flex items-center gap-6 text-xs font-bold text-[#44403C]">
-            <button onClick={() => navigate('/passenger')} className="text-[#B91C1C] hover:underline font-black flex items-center gap-1 cursor-pointer">
-              <span>👤 Passenger Portal</span>
-            </button>
-            <button onClick={() => navigate('/driver')} className="hover:text-[#B91C1C] flex items-center gap-1 cursor-pointer">
+            <a href="#routes" className="hover:text-[#B91C1C] transition-colors">
+              Routes &amp; Destinations
+            </a>
+            <a href="#logistics" className="hover:text-[#B91C1C] transition-colors">
+              Fleet Specs
+            </a>
+            <a href="#telemetry" className="hover:text-[#B91C1C] transition-colors">
+              Live Telemetry
+            </a>
+            <button
+              onClick={() => navigate('/login?role=driver')}
+              className="hover:text-[#B91C1C] flex items-center gap-1 cursor-pointer transition-colors"
+            >
               <span>🚌 Driver HUD</span>
             </button>
-            <button onClick={() => navigate('/admin')} className="hover:text-[#B91C1C] flex items-center gap-1 cursor-pointer">
-              <span>🛡️ Platform Admin</span>
+            <button
+              onClick={() => navigate('/login?role=admin')}
+              className="hover:text-[#B91C1C] flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <span>🛡️ Fleet Admin</span>
             </button>
-            <button onClick={() => navigate('/fleet')} className="hover:text-[#B91C1C] transition-colors cursor-pointer">
-              Fleet &amp; Routes
-            </button>
-            <a href="#telemetry" className="hover:text-[#B91C1C] transition-colors">
-              GT Road Radar
-            </a>
           </nav>
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate('/passenger')}
-              className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#1C1917] rounded-full text-xs font-bold border border-[#E7E2DA] transition-all cursor-pointer"
+              onClick={() => navigate('/login')}
+              className="text-xs font-bold text-[#44403C] hover:text-[#B91C1C] px-3.5 py-2 cursor-pointer transition-colors"
             >
-              <span>Explore Buses</span>
+              Sign In
             </button>
-
-            {isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    if (user?.role === 'ADMIN') navigate('/admin');
-                    else if (user?.role === 'OPERATOR') navigate('/driver');
-                    else navigate('/passenger');
-                  }}
-                  className="px-4 py-2 bg-[#F3EFEA] text-[#1C1917] rounded-full text-xs font-bold border border-[#E7E2DA] cursor-pointer"
-                >
-                  {user?.name} ({user?.role})
-                </button>
-                <button
-                  onClick={logout}
-                  className="text-xs font-bold text-[#78716C] hover:text-[#B91C1C] cursor-pointer"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setAuthModalOpen(true)}
-                className="text-xs font-bold text-[#44403C] hover:text-[#B91C1C] px-3 py-2 cursor-pointer"
-              >
-                Sign In
-              </button>
-            )}
 
             {/* Red 'Book Journey' CTA */}
             <button
-              onClick={() => {
-                if (!isAuthenticated) {
-                  setAuthModalOpen(true);
-                } else {
-                  navigate('/passenger');
-                }
-              }}
+              onClick={() => handleInitiateBooking()}
               className="px-5 py-2.5 bg-[#B91C1C] hover:bg-[#991B1B] active:scale-[0.98] text-white rounded-full text-xs font-black shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <span>Book Journey</span>
@@ -183,7 +149,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </header>
 
-      {/* 2. HERO SECTION matching Image */}
+      {/* 2. HERO SECTION matching Image 3 */}
       <section className="relative pt-12 pb-16 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -191,7 +157,7 @@ export const LandingPage: React.FC = () => {
             <div className="lg:col-span-6 space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] text-[10px] font-black uppercase tracking-wider">
                 <span className="w-2 h-2 rounded-full bg-[#B91C1C] animate-pulse"></span>
-                <span>PREMIUM OVERLAND TRANSIT • PUNJAB NETWORK</span>
+                <span>PREMIUM OVERLAND TRANSIT • PUNJAB &amp; NORTH CORRIDORS</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#1C1917] tracking-tight leading-[1.1]">
@@ -199,7 +165,7 @@ export const LandingPage: React.FC = () => {
               </h1>
 
               <p className="text-sm sm:text-base text-[#78716C] font-medium leading-relaxed max-w-xl">
-                Enjoy breathtaking panoramic overland networks across Punjab, Chandigarh, Delhi, and Himalayan gateways. Relish in tailored luxury, real-time GPS fleet tracking, and guaranteed zero-conflict seat reservation.
+                Enjoy breathtaking panoramic network routes of coastal lines and alpine horizons across Punjab, Chandigarh, Delhi, and Himalayan gateways. Relish in tailored luxury, live telemetry, and seamless overland transit with Rova.
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -213,7 +179,7 @@ export const LandingPage: React.FC = () => {
 
                 <a
                   href="#routes"
-                  className="px-6 py-3.5 bg-white hover:bg-[#F3EFEA] text-[#1C1917] font-bold text-xs sm:text-sm rounded-full border border-[#E7E2DA] transition-all flex items-center gap-2"
+                  className="px-6 py-3.5 bg-white hover:bg-[#F3EFEA] text-[#1C1917] font-bold text-xs sm:text-sm rounded-full border border-[#E7E2DA] transition-all flex items-center gap-2 cursor-pointer"
                 >
                   <Compass className="w-4 h-4 text-[#B91C1C]" />
                   <span>Explore Routes</span>
@@ -236,7 +202,7 @@ export const LandingPage: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-1 text-[#F59E0B] text-xs font-black">
                     <Star className="w-3.5 h-3.5 fill-[#F59E0B]" />
-                    <span>4.9 / 5.0</span>
+                    <span>4.9 / 5.0 (12,300+ Verified Reviews)</span>
                   </div>
                   <p className="text-[10px] text-[#78716C] font-semibold">
                     Over 120,000+ happy overland voyagers across Northern India
@@ -245,21 +211,21 @@ export const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Overlapping Luxury Coach Visual matching Image */}
+            {/* Right Overlapping Luxury Coach Visual matching Image 3, 4, 5 */}
             <div className="lg:col-span-6 relative">
               <div className="relative mx-auto max-w-lg">
-                {/* Main Coach Exterior Card */}
-                <div className="relative rounded-3xl overflow-hidden shadow-card border border-[#E7E2DA] h-80 group">
+                {/* Main Coach Exterior Card matching Image 5 */}
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-[#E7E2DA] h-80 group">
                   <img
                     src="/images/coach-exterior.jpg"
-                    alt="Scenic Luxury Overland Coach"
+                    alt="Scenic Luxury Overland Coach through Stone Tunnel"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#1C1917]/70 via-transparent to-transparent"></div>
                   <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-bold">
                     <span className="flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-[#F59E0B]" />
-                      <span>Grand Trunk Highway • Golden Corridor</span>
+                      <span>Grand Trunk Highway • Coastal &amp; Alpine Lines</span>
                     </span>
                     <span className="px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-md text-[10px] font-mono">
                       PB-02-AK-9921
@@ -267,15 +233,15 @@ export const LandingPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Overlapping Interior Card */}
+                {/* Overlapping Interior Card matching Image 4 */}
                 <div className="absolute -bottom-10 -left-6 sm:-left-10 w-64 sm:w-72 rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-white">
                   <div className="relative h-44">
                     <img
                       src="/images/coach-interior.jpg"
-                      alt="Luxury Recliner Cabin"
+                      alt="Luxury Panoramic Interior with Elena Lindqvist"
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-[#1C1917] text-[9px] font-black">
+                    <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-white/95 backdrop-blur-md text-[#1C1917] text-[9px] font-black shadow-xs">
                       Elena Lindqvist ★ 4.9
                     </div>
                   </div>
@@ -299,9 +265,9 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. RED RIBBON BANNER matching Image */}
+      {/* 3. RED RIBBON BANNER matching Image 3 */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-        <div className="bg-[#B91C1C] text-white rounded-3xl p-6 shadow-sm">
+        <div className="bg-[#B91C1C] text-white rounded-3xl p-6 sm:p-8 shadow-lg">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="space-y-1">
               <p className="text-2xl sm:text-3xl font-black">120k+</p>
@@ -309,21 +275,21 @@ export const LandingPage: React.FC = () => {
             </div>
             <div className="space-y-1">
               <p className="text-2xl sm:text-3xl font-black">45+</p>
-              <p className="text-xs text-white/80 font-bold uppercase tracking-wider">Punjab &amp; North Corridors</p>
+              <p className="text-xs text-white/80 font-bold uppercase tracking-wider">Corridors Scenic Overland Lines</p>
             </div>
             <div className="space-y-1">
               <p className="text-2xl sm:text-3xl font-black">140°</p>
-              <p className="text-xs text-white/80 font-bold uppercase tracking-wider">Tilt Club (Recliners)</p>
+              <p className="text-xs text-white/80 font-bold uppercase tracking-wider">Tilt Club Glassdome Seating</p>
             </div>
             <div className="space-y-1">
               <p className="text-2xl sm:text-3xl font-black">99.8%</p>
-              <p className="text-xs text-white/80 font-bold uppercase tracking-wider">Punctuality Score</p>
+              <p className="text-xs text-white/80 font-bold uppercase tracking-wider">Punctual Live Telemetry Radar</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. POPULAR OVERLAND ROUTES IN INDIA / PUNJAB matching Image */}
+      {/* 4. POPULAR OVERLAND ROUTES IN INDIA / PUNJAB matching Image 3 */}
       <section id="routes" className="py-14 bg-white border-t border-b border-[#E7E2DA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10">
@@ -340,8 +306,8 @@ export const LandingPage: React.FC = () => {
             </div>
 
             <button
-              onClick={() => navigate('/fleet')}
-              className="mt-4 sm:mt-0 px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#1C1917] rounded-full text-xs font-bold border border-[#E7E2DA] transition-all flex items-center gap-1.5"
+              onClick={() => handleInitiateBooking()}
+              className="mt-4 sm:mt-0 px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#1C1917] rounded-full text-xs font-bold border border-[#E7E2DA] transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <span>Explore All Fleets</span>
               <ChevronRight className="w-4 h-4 text-[#B91C1C]" />
@@ -392,8 +358,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. WHY CHOOSE ROVA / ELEVATED GROUND LOGISTICS matching Image */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 5. WHY CHOOSE ROVA / ELEVATED GROUND LOGISTICS matching Image 3 */}
+      <section id="logistics" className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-6 space-y-5">
             <span className="text-[11px] font-black uppercase tracking-widest text-[#B91C1C]">
@@ -423,28 +389,28 @@ export const LandingPage: React.FC = () => {
 
             <div className="pt-4 flex flex-wrap gap-2 text-xs">
               <button
-                onClick={() => handleInitiateBooking()}
-                className="px-4 py-2 bg-[#B91C1C] text-white font-bold rounded-full"
+                onClick={() => navigate('/login?role=passenger')}
+                className="px-4 py-2 bg-[#B91C1C] hover:bg-[#991B1B] text-white font-bold rounded-full cursor-pointer shadow-xs"
               >
-                Passenger Access
+                👤 Passenger Access
               </button>
               <button
-                onClick={() => navigate('/dashboard')}
-                className="px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#44403C] font-bold rounded-full border border-[#E7E2DA]"
+                onClick={() => navigate('/login?role=driver')}
+                className="px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#44403C] font-bold rounded-full border border-[#E7E2DA] cursor-pointer"
               >
-                Driver Captain HUD
+                🚌 Driver Captain HUD
               </button>
               <button
-                onClick={() => navigate('/dashboard')}
-                className="px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#44403C] font-bold rounded-full border border-[#E7E2DA]"
+                onClick={() => navigate('/login?role=admin')}
+                className="px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#44403C] font-bold rounded-full border border-[#E7E2DA] cursor-pointer"
               >
-                Fleet Dispatch HUD
+                🛡️ Fleet Dispatch HUD
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-6 relative">
-            <div className="rounded-3xl overflow-hidden shadow-card border border-[#E7E2DA] h-72 sm:h-80 relative">
+            <div className="rounded-3xl overflow-hidden shadow-2xl border border-[#E7E2DA] h-72 sm:h-80 relative">
               <img
                 src="/images/coach-interior.jpg"
                 alt="Luxury Intercity Coach Interior"
@@ -461,7 +427,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. EXPLORE CORRIDORS IN REAL-TIME (LIVE RADAR) matching Image */}
+      {/* 6. EXPLORE CORRIDORS IN REAL-TIME (LIVE RADAR) matching Image 3 */}
       <section id="telemetry" className="py-14 bg-white border-t border-b border-[#E7E2DA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -523,7 +489,7 @@ export const LandingPage: React.FC = () => {
 
               <div className="pt-2">
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate('/login?role=driver')}
                   className="px-6 py-3.5 bg-[#B91C1C] hover:bg-[#991B1B] text-white font-black text-xs rounded-full shadow-xs transition-all flex items-center gap-2 cursor-pointer"
                 >
                   <span>Launch Radar HUD</span>
@@ -535,7 +501,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 7. PASSENGER TESTIMONIALS matching Image */}
+      {/* 7. PASSENGER TESTIMONIALS matching Image 3 */}
       <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-xl mx-auto mb-10">
           <span className="text-[11px] font-black uppercase tracking-widest text-[#B91C1C]">
@@ -597,7 +563,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 8. VISION & FLEET BANNER matching Image */}
+      {/* 8. VISION & FLEET BANNER matching Image 3 */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <div className="bg-[#B91C1C] text-white rounded-3xl p-8 sm:p-12 shadow-md">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -630,7 +596,7 @@ export const LandingPage: React.FC = () => {
                   Book Journey
                 </button>
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate('/login?role=driver')}
                   className="px-6 py-3 bg-[#991B1B] hover:bg-red-900 text-white font-bold text-xs rounded-full border border-white/20 transition-all cursor-pointer"
                 >
                   Contact Dispatch
@@ -641,7 +607,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 9. DARK FOOTER matching Image */}
+      {/* 9. DARK FOOTER matching Image 3 */}
       <footer className="bg-[#1C1917] text-[#D6D3D1] py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-stone-800">
@@ -670,19 +636,19 @@ export const LandingPage: React.FC = () => {
             <div>
               <h4 className="text-xs font-black uppercase text-white tracking-wider mb-3">Fleet &amp; Crew</h4>
               <ul className="space-y-2 text-xs text-[#A8A29E]">
-                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/fleet')}>Cabin Amenities</li>
-                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/fleet')}>Safety Telemetry</li>
-                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/schedule')}>Captain Protocols</li>
-                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/schedule')}>Charter Solutions</li>
+                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/login?role=driver')}>Driver Cockpit HUD</li>
+                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/login?role=admin')}>Fleet Logistics Console</li>
+                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/login?role=driver')}>Live 37-Berth Schematic</li>
+                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/login?role=admin')}>Platform Revenue Analytics</li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-xs font-black uppercase text-white tracking-wider mb-3">Dispatch Center</h4>
-              <p className="text-xs text-[#A8A29E] mb-1">Headquarters: Punjab Dispatch Hub</p>
+              <p className="text-xs text-[#A8A29E] mb-1">Headquarters: Punjab Operations Hub</p>
               <p className="text-xs text-[#A8A29E] mb-3">24/7 Toll-Free: 1800-ROVA-BUS</p>
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/login?role=driver')}
                 className="px-4 py-2 bg-[#B91C1C] hover:bg-[#991B1B] text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
               >
                 Access System HUD &rarr;
@@ -696,13 +662,6 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </footer>
-
-      {/* Auth Modal with Quick 1-Click Demo Logins */}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        onSuccess={handleLoginSuccess}
-      />
     </div>
   );
 };

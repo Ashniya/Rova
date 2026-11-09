@@ -1,16 +1,18 @@
 // Centralized fleet, driver assignment, and real-time seat reservation service
-// Ensures cross-account seat integrity: when User A books a seat, it is immediately marked as SOLD for User B, Driver & Admin.
+// Real Punjab RTC (PUNBUS, PRTC) & Intercity fleet data
 
 export interface BusData {
   id: string;
   registrationNumber: string;
   name: string;
+  operatorType: string;
   busType: string;
   totalSeats: number;
   origin: string;
   destination: string;
   departureTime: string;
   arrivalTime: string;
+  timeSlot: 'MORNING' | 'AFTERNOON' | 'NIGHT';
   basePrice: number;
   driverName: string;
   driverPhone: string;
@@ -32,18 +34,33 @@ export interface BookedSeatRecord {
   status: 'CONFIRMED' | 'CHECKED_IN' | 'CANCELLED';
 }
 
+export const PUNJAB_CITIES = [
+  'Amritsar ISBT',
+  'Jalandhar Rama Mandi',
+  'Ludhiana Sherpur',
+  'Chandigarh Sector 17',
+  'Patiala ISBT',
+  'Bathinda Terminal',
+  'Delhi Kashmere Gate',
+  'Pathankot Cantt',
+  'Manali Mall Road',
+  'Shimla Old ISBT',
+];
+
 const DEFAULT_BUSES: BusData[] = [
   {
     id: 'bus-1',
     registrationNumber: 'PB-02-AK-9921',
-    name: 'StarLiner Punjab Executive',
-    busType: 'Scania Multi-Axle Recliner',
+    name: 'PUNBUS Volvo 9600 Multi-Axle',
+    operatorType: 'Punjab Roadways (PUNBUS)',
+    busType: 'Volvo 9600 Air-Suspension',
     totalSeats: 37,
-    origin: 'Amritsar ISBT Central',
+    origin: 'Amritsar ISBT',
     destination: 'Chandigarh Sector 17',
     departureTime: '06:30 AM',
     arrivalTime: '10:45 AM',
-    basePrice: 1100,
+    timeSlot: 'MORNING',
+    basePrice: 650,
     driverName: 'Gurpreet Singh',
     driverPhone: '+91 98140-54321',
     driverInitials: 'GS',
@@ -51,15 +68,17 @@ const DEFAULT_BUSES: BusData[] = [
   },
   {
     id: 'bus-2',
-    registrationNumber: 'PB-08-CC-4412',
-    name: 'Astra Grand Cruiser',
-    busType: 'Volvo 9600 Luxury Sleeper',
+    registrationNumber: 'PB-10-BX-1002',
+    name: 'PRTC PEPSU Executive HVAC',
+    operatorType: 'PRTC (PEPSU Roadways)',
+    busType: 'Corona AC Intercity',
     totalSeats: 37,
-    origin: 'Jalandhar Rama Mandi',
+    origin: 'Ludhiana Sherpur',
     destination: 'Delhi Kashmere Gate',
-    departureTime: '09:00 AM',
-    arrivalTime: '03:30 PM',
-    basePrice: 1450,
+    departureTime: '07:45 AM',
+    arrivalTime: '01:30 PM',
+    timeSlot: 'MORNING',
+    basePrice: 780,
     driverName: 'Balwinder Sharma',
     driverPhone: '+91 98722-11099',
     driverInitials: 'BS',
@@ -67,15 +86,17 @@ const DEFAULT_BUSES: BusData[] = [
   },
   {
     id: 'bus-3',
-    registrationNumber: 'PB-10-BX-1102',
-    name: 'Himalayan Luxury Sleeper',
-    busType: 'Mercedes-Benz Glider AC',
+    registrationNumber: 'PB-08-CC-4412',
+    name: 'Punjab Roadways Fast Track',
+    operatorType: 'Punjab Roadways (PUNBUS)',
+    busType: 'Scania Multi-Axle Recliner',
     totalSeats: 37,
-    origin: 'Amritsar ISBT',
-    destination: 'Manali Mall Road',
-    departureTime: '08:15 AM',
-    arrivalTime: '04:45 PM',
-    basePrice: 1650,
+    origin: 'Jalandhar Rama Mandi',
+    destination: 'Delhi Kashmere Gate',
+    departureTime: '09:00 AM',
+    arrivalTime: '03:15 PM',
+    timeSlot: 'MORNING',
+    basePrice: 850,
     driverName: 'Davinder Gill',
     driverPhone: '+91 94170-88231',
     driverInitials: 'DG',
@@ -83,58 +104,113 @@ const DEFAULT_BUSES: BusData[] = [
   },
   {
     id: 'bus-4',
-    registrationNumber: 'PB-01-DL-8820',
-    name: 'Punjab Roadways Scania',
-    busType: 'Scania Intercity 2+2',
+    registrationNumber: 'PB-02-RS-2201',
+    name: 'StarLiner Executive Scania',
+    operatorType: 'StarLiner Expeditions',
+    busType: 'Scania Touring VIP',
     totalSeats: 37,
-    origin: 'Chandigarh Sector 17',
-    destination: 'Amritsar ISBT',
-    departureTime: '11:30 AM',
-    arrivalTime: '03:45 PM',
+    origin: 'Amritsar ISBT',
+    destination: 'Chandigarh Sector 17',
+    departureTime: '02:00 PM',
+    arrivalTime: '06:15 PM',
+    timeSlot: 'AFTERNOON',
     basePrice: 950,
+    driverName: 'Gurpreet Singh',
+    driverPhone: '+91 98140-54321',
+    driverInitials: 'GS',
+    status: 'ON_TIME',
+  },
+  {
+    id: 'bus-5',
+    registrationNumber: 'PB-11-DL-8820',
+    name: 'PRTC Goldline Express',
+    operatorType: 'PRTC (PEPSU Roadways)',
+    busType: 'Tata Ultra Deluxe AC',
+    totalSeats: 37,
+    origin: 'Patiala ISBT',
+    destination: 'Chandigarh Sector 17',
+    departureTime: '10:15 AM',
+    arrivalTime: '11:45 AM',
+    timeSlot: 'MORNING',
+    basePrice: 220,
     driverName: 'Harbhajan Singh',
     driverPhone: '+91 98555-77610',
     driverInitials: 'HS',
     status: 'ON_TIME',
   },
   {
-    id: 'bus-5',
-    registrationNumber: 'PB-65-AX-5501',
-    name: 'Golden Temple Express',
-    busType: 'BharatBenz Air-Suspension',
+    id: 'bus-6',
+    registrationNumber: 'PB-03-AK-4433',
+    name: 'PUNBUS Royal Sleeper',
+    operatorType: 'Punjab Roadways (PUNBUS)',
+    busType: 'BharatBenz Sleeper Coach',
     totalSeats: 37,
-    origin: 'Ludhiana Sherpur',
-    destination: 'Jalandhar Rama Mandi',
-    departureTime: '02:00 PM',
-    arrivalTime: '03:15 PM',
-    basePrice: 450,
+    origin: 'Bathinda Terminal',
+    destination: 'Chandigarh Sector 17',
+    departureTime: '05:45 AM',
+    arrivalTime: '10:00 AM',
+    timeSlot: 'MORNING',
+    basePrice: 520,
     driverName: 'Jagtar Sandhu',
     driverPhone: '+91 98150-33421',
     driverInitials: 'JS',
     status: 'ON_TIME',
   },
+  {
+    id: 'bus-7',
+    registrationNumber: 'PB-10-BX-1102',
+    name: 'Himalayan Glacier Sleeper',
+    operatorType: 'StarLiner Expeditions',
+    busType: 'Mercedes-Benz Glider AC',
+    totalSeats: 37,
+    origin: 'Amritsar ISBT',
+    destination: 'Manali Mall Road',
+    departureTime: '08:15 PM',
+    arrivalTime: '06:00 AM',
+    timeSlot: 'NIGHT',
+    basePrice: 1450,
+    driverName: 'Baldev Singh',
+    driverPhone: '+91 99144-88902',
+    driverInitials: 'BS',
+    status: 'ON_TIME',
+  },
+  {
+    id: 'bus-8',
+    registrationNumber: 'PB-65-AX-5501',
+    name: 'Golden Temple Express',
+    operatorType: 'PRTC (PEPSU Roadways)',
+    busType: 'Ashok Leyland Viking AC',
+    totalSeats: 37,
+    origin: 'Ludhiana Sherpur',
+    destination: 'Jalandhar Rama Mandi',
+    departureTime: '03:30 PM',
+    arrivalTime: '04:45 PM',
+    timeSlot: 'AFTERNOON',
+    basePrice: 180,
+    driverName: 'Davinder Gill',
+    driverPhone: '+91 94170-88231',
+    driverInitials: 'DG',
+    status: 'ON_TIME',
+  },
 ];
 
-// Initial bookings so the driver and passenger screens display realistic seat reservations
 const DEFAULT_BOOKINGS: BookedSeatRecord[] = [
-  { busId: 'bus-1', seatCode: 'V1', passengerName: 'Amanpreet Singh', passengerPhone: '+91 98765-43210', passengerEmail: 'aman@example.com', pnr: 'ROV-7849X', bookingDate: 'Today 06:00 AM', fare: 1100, boardingPoint: 'Amritsar ISBT Central', droppingPoint: 'Chandigarh Sector 17', status: 'CHECKED_IN' },
-  { busId: 'bus-1', seatCode: 'V2', passengerName: 'Simranjit Kaur', passengerPhone: '+91 98765-43211', passengerEmail: 'simran@example.com', pnr: 'ROV-7849Y', bookingDate: 'Today 06:00 AM', fare: 1100, boardingPoint: 'Amritsar ISBT Central', droppingPoint: 'Chandigarh Sector 17', status: 'CHECKED_IN' },
-  { busId: 'bus-1', seatCode: 'V3', passengerName: 'Rajinder Sharma', passengerPhone: '+91 94170-88231', passengerEmail: 'rajinder@example.com', pnr: 'ROV-8821X', bookingDate: 'Today 06:05 AM', fare: 1100, boardingPoint: 'Jalandhar Rama Mandi', droppingPoint: 'Chandigarh Sector 17', status: 'CONFIRMED' },
-  { busId: 'bus-1', seatCode: 'S1', passengerName: 'Gurpreet Singh', passengerPhone: '+91 98140-54321', passengerEmail: 'gurpreet@example.com', pnr: 'ROV-9912A', bookingDate: 'Today 06:10 AM', fare: 1100, boardingPoint: 'Amritsar ISBT Central', droppingPoint: 'Chandigarh Sector 17', status: 'CHECKED_IN' },
-  { busId: 'bus-1', seatCode: 'S2', passengerName: 'Harleen Kaur', passengerPhone: '+91 98722-11099', passengerEmail: 'harleen@example.com', pnr: 'ROV-9912B', bookingDate: 'Today 06:10 AM', fare: 1100, boardingPoint: 'Amritsar ISBT Central', droppingPoint: 'Chandigarh Sector 17', status: 'CHECKED_IN' },
-  { busId: 'bus-1', seatCode: 'S3', passengerName: 'Manpreet Dhillon', passengerPhone: '+91 98555-77610', passengerEmail: 'manpreet@example.com', pnr: 'ROV-7710M', bookingDate: 'Today 06:15 AM', fare: 1100, boardingPoint: 'Amritsar ISBT Central', droppingPoint: 'Chandigarh Sector 17', status: 'CONFIRMED' },
-  { busId: 'bus-1', seatCode: 'S4', passengerName: 'Sukhwinder Gill', passengerPhone: '+91 98150-33421', passengerEmail: 'sukhwinder@example.com', pnr: 'ROV-6620S', bookingDate: 'Today 06:15 AM', fare: 1100, boardingPoint: 'Amritsar ISBT Central', droppingPoint: 'Chandigarh Sector 17', status: 'CONFIRMED' },
+  { busId: 'bus-1', seatCode: 'V1', passengerName: 'Amanpreet Singh', passengerPhone: '+91 98765-43210', passengerEmail: 'aman@example.com', pnr: 'ROV-7849X', bookingDate: 'Today 06:00 AM', fare: 650, boardingPoint: 'Amritsar ISBT', droppingPoint: 'Chandigarh Sector 17', status: 'CHECKED_IN' },
+  { busId: 'bus-1', seatCode: 'V2', passengerName: 'Simranjit Kaur', passengerPhone: '+91 98765-43211', passengerEmail: 'simran@example.com', pnr: 'ROV-7849Y', bookingDate: 'Today 06:00 AM', fare: 650, boardingPoint: 'Amritsar ISBT', droppingPoint: 'Chandigarh Sector 17', status: 'CHECKED_IN' },
+  { busId: 'bus-1', seatCode: 'S1', passengerName: 'Gurpreet Singh', passengerPhone: '+91 98140-54321', passengerEmail: 'gurpreet@example.com', pnr: 'ROV-9912A', bookingDate: 'Today 06:10 AM', fare: 650, boardingPoint: 'Amritsar ISBT', droppingPoint: 'Chandigarh Sector 17', status: 'CHECKED_IN' },
+  { busId: 'bus-1', seatCode: 'S2', passengerName: 'Harleen Kaur', passengerPhone: '+91 98722-11099', passengerEmail: 'harleen@example.com', pnr: 'ROV-9912B', bookingDate: 'Today 06:10 AM', fare: 650, boardingPoint: 'Amritsar ISBT', droppingPoint: 'Chandigarh Sector 17', status: 'CHECKED_IN' },
 ];
 
 export const fleetService = {
   getBuses(): BusData[] {
-    const raw = localStorage.getItem('rova_fleet_buses');
+    const raw = localStorage.getItem('rova_fleet_buses_v2');
     if (!raw) {
-      localStorage.setItem('rova_fleet_buses', JSON.stringify(DEFAULT_BUSES));
+      localStorage.setItem('rova_fleet_buses_v2', JSON.stringify(DEFAULT_BUSES));
       return DEFAULT_BUSES;
     }
     try {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      return parsed.length > 0 ? parsed : DEFAULT_BUSES;
     } catch {
       return DEFAULT_BUSES;
     }
@@ -145,7 +221,7 @@ export const fleetService = {
   },
 
   saveBuses(buses: BusData[]) {
-    localStorage.setItem('rova_fleet_buses', JSON.stringify(buses));
+    localStorage.setItem('rova_fleet_buses_v2', JSON.stringify(buses));
   },
 
   addBus(bus: Omit<BusData, 'id'>): BusData {
@@ -156,6 +232,7 @@ export const fleetService = {
     };
     buses.push(newBus);
     this.saveBuses(buses);
+    window.dispatchEvent(new CustomEvent('rova_seats_updated', { detail: { action: 'bus_added' } }));
     return newBus;
   },
 
@@ -173,25 +250,26 @@ export const fleetService = {
       buses[idx].driverPhone = driverPhone;
       buses[idx].driverInitials = initials;
       this.saveBuses(buses);
+      window.dispatchEvent(new CustomEvent('rova_seats_updated', { detail: { action: 'driver_assigned' } }));
     }
   },
 
-  // Cross-account seat reservations
   getAllBookings(): BookedSeatRecord[] {
-    const raw = localStorage.getItem('rova_fleet_bookings');
+    const raw = localStorage.getItem('rova_fleet_bookings_v2');
     if (!raw) {
-      localStorage.setItem('rova_fleet_bookings', JSON.stringify(DEFAULT_BOOKINGS));
+      localStorage.setItem('rova_fleet_bookings_v2', JSON.stringify(DEFAULT_BOOKINGS));
       return DEFAULT_BOOKINGS;
     }
     try {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      return parsed.length > 0 ? parsed : DEFAULT_BOOKINGS;
     } catch {
       return DEFAULT_BOOKINGS;
     }
   },
 
   saveBookings(bookings: BookedSeatRecord[]) {
-    localStorage.setItem('rova_fleet_bookings', JSON.stringify(bookings));
+    localStorage.setItem('rova_fleet_bookings_v2', JSON.stringify(bookings));
   },
 
   getBookedSeatsForBus(busId: string): string[] {
@@ -226,7 +304,6 @@ export const fleetService = {
   ): { success: boolean; pnr: string; error?: string } {
     const all = this.getAllBookings();
 
-    // Check for seat conflicts across all accounts
     const existingBooked = all
       .filter((b) => b.busId === busId && b.status !== 'CANCELLED')
       .map((b) => b.seatCode);
@@ -240,7 +317,6 @@ export const fleetService = {
       };
     }
 
-    // Generate unique PNR
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let pnr = 'ROV-';
     for (let i = 0; i < 5; i++) {
@@ -264,9 +340,7 @@ export const fleetService = {
     all.push(...newBookings);
     this.saveBookings(all);
 
-    // Also notify any listening components
     window.dispatchEvent(new CustomEvent('rova_seats_updated', { detail: { busId, seatCodes } }));
-
     return { success: true, pnr };
   },
 

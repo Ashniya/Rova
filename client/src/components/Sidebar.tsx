@@ -74,24 +74,27 @@ export const Sidebar: React.FC = () => {
         {/* Brand Header */}
         <div className={`border-b border-[#2E2A27] transition-all duration-300 ${collapsed ? 'p-3 flex flex-col items-center' : 'p-6'}`}>
           {collapsed ? (
-            /* Minimized state */
-            <div className="flex flex-col items-center gap-3 w-full">
+            /* Minimized state: Rova title at top */
+            <div className="flex flex-col items-center gap-2 w-full pt-1">
               <Link
-                to="/landing"
-                title="Rova • Where routes become journeys"
-                className="text-center group"
+                to="/"
+                title="Rova • Where routes become journeys."
+                className="text-center group flex flex-col items-center"
               >
-                <span className="text-xl font-black tracking-tight text-white group-hover:text-[#B91C1C] transition-colors block">
-                  Rova
+                <div className="w-10 h-10 rounded-2xl bg-[#B91C1C] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
+                  <Bus className="w-5 h-5 stroke-[2.5]" />
+                </div>
+                <span className="text-base font-black tracking-tight text-white group-hover:text-[#B91C1C] transition-colors block mt-1.5 leading-none">
+                  ROVA
                 </span>
-                <span className="text-[8px] font-bold tracking-widest text-[#B91C1C] uppercase block -mt-0.5">
-                  Transit
+                <span className="text-[7px] font-black tracking-widest text-[#B91C1C] uppercase block mt-0.5">
+                  FLEET
                 </span>
               </Link>
               <button
                 onClick={toggleSidebar}
                 title="Expand Sidebar"
-                className="p-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 transition-all cursor-pointer"
+                className="p-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 transition-all cursor-pointer mt-2"
               >
                 <ChevronRight className="w-4 h-4 text-[#B91C1C]" />
               </button>
@@ -99,17 +102,22 @@ export const Sidebar: React.FC = () => {
           ) : (
             /* Expanded state */
             <div className="flex items-start justify-between">
-              <Link to="/landing" className="flex flex-col group">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-[#B91C1C] flex items-center justify-center text-white">
-                    <Bus className="w-4 h-4" />
+              <Link to="/" className="flex flex-col group">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-2xl bg-[#B91C1C] flex items-center justify-center text-white shadow-xs">
+                    <Bus className="w-5 h-5 stroke-[2.5]" />
                   </div>
-                  <span className="text-2xl font-black tracking-tight text-white group-hover:text-[#FCA5A5] transition-colors">
-                    Rova
-                  </span>
+                  <div>
+                    <span className="text-2xl font-black tracking-tight text-white group-hover:text-[#FCA5A5] transition-colors block leading-none">
+                      ROVA
+                    </span>
+                    <span className="text-[9px] font-black tracking-widest text-[#B91C1C] uppercase block mt-0.5">
+                      EXPEDITIONS &amp; FLEET
+                    </span>
+                  </div>
                 </div>
-                <span className="text-[10px] font-bold tracking-wide text-stone-300 mt-2">
-                  Where routes become journeys
+                <span className="text-[11px] font-medium text-stone-300 mt-2.5">
+                  Where routes become journeys.
                 </span>
                 <span className="text-[9px] tracking-widest text-[#F59E0B] uppercase mt-0.5 font-bold">
                   {portalTitle}
@@ -118,7 +126,7 @@ export const Sidebar: React.FC = () => {
               <button
                 onClick={toggleSidebar}
                 title="Minimize Sidebar"
-                className="p-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white border border-stone-700 transition-all cursor-pointer mt-1"
+                className="p-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white border border-stone-700 transition-all cursor-pointer mt-0.5"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
