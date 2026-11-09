@@ -6,12 +6,14 @@ interface AuthModalProps {
   isOpen: boolean;
   initialMode?: 'login' | 'register';
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   initialMode = 'login',
   onClose,
+  onSuccess,
 }) => {
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
   const [email, setEmail] = useState('');
@@ -38,6 +40,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         await register(name, email, password, role, operatorName);
       }
       onClose();
+      if (onSuccess) onSuccess();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Authentication failed. Please check your credentials.');
     } finally {
