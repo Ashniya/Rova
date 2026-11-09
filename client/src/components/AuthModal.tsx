@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User as UserIcon, Building, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, Lock, Mail, User as UserIcon, Bus, ShieldCheck, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface AuthModalProps {
@@ -7,6 +8,7 @@ interface AuthModalProps {
   initialMode?: 'login' | 'register';
   onClose: () => void;
   onSuccess?: () => void;
+  defaultRole?: 'PASSENGER' | 'DRIVER' | 'ADMIN';
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -14,19 +16,68 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   initialMode = 'login',
   onClose,
   onSuccess,
+  defaultRole = 'PASSENGER',
 }) => {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [selectedRoleTab, setSelectedRoleTab] = useState<'PASSENGER' | 'DRIVER' | 'ADMIN'>(defaultRole);
+  const [email, setEmail] = useState('gozal@example.com');
+  const [password, setPassword] = useState('password123');
   const [name, setName] = useState('');
-  const [role, setRole] = useState<'PASSENGER' | 'OPERATOR'>('PASSENGER');
-  const [operatorName, setOperatorName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const { login, register } = useAuth();
 
   if (!isOpen) return null;
+
+  const handleSelectRole = (r: 'PASSENGER' | 'DRIVER' | 'ADMIN') => {
+    setSelectedRoleTab(r);
+    setError(null);
+    if (r === 'PASSENGER') {
+      setEmail('gozal@example.com');
+      setPassword('password123');
+    } else if (r === 'DRIVER') {
+      setEmail('operator@silkroad.com');
+      setPassword('operator123');
+    } else {
+      setEmail('admin@rova.com');
+      setPassword('admin123');
+    }
+  };
+
+  const handleDirectRoleLogin = async (r: 'PASSENGER' | 'DRIVER' | 'ADMIN') => {
+    setError(null);
+    setLoading(true);
+    let targetEmail = 'gozal@example.com';
+    let targetPass = 'password123';
+    let redirectUrl = '/passenger';
+
+    if (r === 'PASSENGER') {
+      targetEmail = 'gozal@example.com';
+      targetPass = 'password123';
+      redirectUrl = '/passenger';
+    } else if (r === 'DRIVER') {
+      targetEmail = 'operator@silkroad.com';
+      targetPass = 'operator123';
+      redirectUrl = '/driver';
+    } else if (r === 'ADMIN') {
+      targetEmail = 'admin@rova.com';
+      targetPass = 'admin123';
+      redirectUrl = '/admin';
+    }
+
+    try {
+      await login(targetEmail, targetPass);
+      onClose();
+      if (onSuccess) onSuccess();
+      navigate(redirectUrl);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Login failed. Please check credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,229 +88,235 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (mode === 'login') {
         await login(email, password);
       } else {
-        await register(name, email, password, role, operatorName);
+        const backendRole = selectedRoleTab === 'PASSENGER' ? 'PASSENGER' : selectedRoleTab === 'DRIVER' ? 'OPERATOR' : 'ADMIN';
+        await register(name, email, password, backendRole);
       }
       onClose();
       if (onSuccess) onSuccess();
+
+      if (selectedRoleTab === 'PASSENGER') navigate('/passenger');
+      else if (selectedRoleTab === 'DRIVER') navigate('/driver');
+      else navigate('/admin');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Authentication failed. Please check your credentials.');
+      setError(err.response?.data?.message || 'Authentication failed. Please check credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  const setDemoAccount = (demoEmail: string, demoPass: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    setMode('login');
-    setError(null);
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-lg bg-white dark:bg-stone-900 rounded-3xl shadow-2xl overflow-hidden border border-[#E7E2DA] dark:border-stone-800">
         {/* Header */}
-        <div className="relative px-6 pt-6 pb-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white">
+        <div className="relative px-6 pt-6 pb-4 bg-[#1C1917] text-white border-b border-stone-800">
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 p-1.5 text-slate-400 hover:text-white rounded-full hover:bg-slate-700/60 transition-colors"
+            className="absolute top-5 right-5 p-2 text-stone-400 hover:text-white rounded-full hover:bg-stone-800 transition-colors cursor-pointer"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-3 h-3 rounded-full bg-brand-500 animate-pulse"></div>
-            <span className="text-xs uppercase font-bold tracking-wider text-brand-400">
-              Rova Platform Access
+            <span className="w-2.5 h-2.5 rounded-full bg-[#B91C1C] animate-pulse"></span>
+            <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-[#F59E0B]">
+              ROVA EXPEDITIONS & FLEET • PORTAL ACCESS
             </span>
           </div>
-          <h3 className="text-2xl font-black">
-            {mode === 'login' ? 'Welcome back to Rova' : 'Create your account'}
+          <h3 className="text-2xl font-black tracking-tight">
+            {mode === 'login' ? 'Select Your Portal' : 'Register New Account'}
           </h3>
-          <p className="text-xs text-slate-300 mt-1">
-            {mode === 'login'
-              ? 'Access your saved trips, manifests and operator tools'
-              : 'Join thousands of seamless travelers and verified operators'}
+          <p className="text-xs text-stone-400 mt-1">
+            Sign in to access your designated passenger booking, driver bus HUD, or platform admin center.
           </p>
         </div>
 
-        {/* Quick Demo Logins Pill */}
-        <div className="px-6 py-3 bg-slate-50 border-b border-slate-100">
-          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-            ⚡ Quick Demo Logins (Click to autofill):
-          </p>
-          <div className="grid grid-cols-3 gap-1.5">
+        {/* 3 Explicit Role Cards */}
+        <div className="p-4 bg-[#FBF9F7] dark:bg-stone-950 border-b border-[#E7E2DA] dark:border-stone-800 space-y-2">
+          <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
+            Choose Role Portal (Click to autofill & switch):
+          </span>
+          <div className="grid grid-cols-3 gap-2">
+            {/* Passenger Tab */}
             <button
               type="button"
-              onClick={() => setDemoAccount('gozal@example.com', 'password123')}
-              className="px-2 py-1.5 bg-white hover:bg-brand-50 border border-slate-200 hover:border-brand-300 rounded-lg text-left text-[11px] font-semibold text-slate-700 hover:text-brand-700 transition-colors"
+              onClick={() => handleSelectRole('PASSENGER')}
+              className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                selectedRoleTab === 'PASSENGER'
+                  ? 'border-[#B91C1C] bg-red-50/80 dark:bg-red-950/30 ring-2 ring-[#B91C1C]/20 shadow-xs'
+                  : 'border-[#E7E2DA] dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-400'
+              }`}
             >
-              👤 Passenger
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base">👤</span>
+                {selectedRoleTab === 'PASSENGER' && (
+                  <span className="w-2 h-2 rounded-full bg-[#B91C1C]"></span>
+                )}
+              </div>
+              <h4 className="text-xs font-black text-[#1C1917] dark:text-white">Passenger</h4>
+              <p className="text-[10px] text-stone-500 dark:text-stone-400 leading-tight mt-0.5">
+                Book seats & view e-tickets
+              </p>
             </button>
+
+            {/* Driver Tab */}
             <button
               type="button"
-              onClick={() => setDemoAccount('operator@silkroad.com', 'operator123')}
-              className="px-2 py-1.5 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-lg text-left text-[11px] font-semibold text-slate-700 hover:text-emerald-700 transition-colors"
+              onClick={() => handleSelectRole('DRIVER')}
+              className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                selectedRoleTab === 'DRIVER'
+                  ? 'border-[#B91C1C] bg-red-50/80 dark:bg-red-950/30 ring-2 ring-[#B91C1C]/20 shadow-xs'
+                  : 'border-[#E7E2DA] dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-400'
+              }`}
             >
-              🚌 Operator
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base">🚌</span>
+                {selectedRoleTab === 'DRIVER' && (
+                  <span className="w-2 h-2 rounded-full bg-[#B91C1C]"></span>
+                )}
+              </div>
+              <h4 className="text-xs font-black text-[#1C1917] dark:text-white">Driver</h4>
+              <p className="text-[10px] text-stone-500 dark:text-stone-400 leading-tight mt-0.5">
+                My assigned bus & live seats
+              </p>
             </button>
+
+            {/* Admin Tab */}
             <button
               type="button"
-              onClick={() => setDemoAccount('admin@rova.com', 'admin123')}
-              className="px-2 py-1.5 bg-white hover:bg-purple-50 border border-slate-200 hover:border-purple-300 rounded-lg text-left text-[11px] font-semibold text-slate-700 hover:text-purple-700 transition-colors"
+              onClick={() => handleSelectRole('ADMIN')}
+              className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                selectedRoleTab === 'ADMIN'
+                  ? 'border-[#B91C1C] bg-red-50/80 dark:bg-red-950/30 ring-2 ring-[#B91C1C]/20 shadow-xs'
+                  : 'border-[#E7E2DA] dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-400'
+              }`}
             >
-              🛡️ Admin
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base">🛡️</span>
+                {selectedRoleTab === 'ADMIN' && (
+                  <span className="w-2 h-2 rounded-full bg-[#B91C1C]"></span>
+                )}
+              </div>
+              <h4 className="text-xs font-black text-[#1C1917] dark:text-white">Platform Admin</h4>
+              <p className="text-[10px] text-stone-500 dark:text-stone-400 leading-tight mt-0.5">
+                Revenue & assign drivers
+              </p>
+            </button>
+          </div>
+
+          {/* 1-Click Instant Enter Button */}
+          <div className="pt-2">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleDirectRoleLogin(selectedRoleTab)}
+              className="w-full py-2.5 px-4 bg-[#B91C1C] hover:bg-[#991B1B] text-white font-black text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              <span>
+                ⚡ Instant 1-Click Login as{' '}
+                {selectedRoleTab === 'PASSENGER'
+                  ? 'Passenger'
+                  : selectedRoleTab === 'DRIVER'
+                  ? 'Bus Driver (Gurpreet Singh)'
+                  : 'Platform Admin'}
+              </span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Form Body */}
+        {/* Credentials Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-medium">
+            <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-bold">
               {error}
             </div>
           )}
 
           {mode === 'register' && (
-            <>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
-                <div className="relative">
-                  <UserIcon className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Jasur Rakhimov"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-brand-500 focus:outline-none transition-all"
-                  />
-                </div>
+            <div>
+              <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
+                Your Full Name
+              </label>
+              <div className="relative">
+                <UserIcon className="absolute left-3.5 top-3 w-4 h-4 text-stone-400" />
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Gurpreet Singh"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#F3EFEA] dark:bg-stone-800 border border-[#E7E2DA] dark:border-stone-700 rounded-xl text-xs font-bold text-[#1C1917] dark:text-white focus:outline-none focus:border-[#B91C1C]"
+                />
               </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Account Role</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setRole('PASSENGER')}
-                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
-                      role === 'PASSENGER'
-                        ? 'bg-brand-500 text-white border-brand-500 shadow-sm'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    Passenger
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRole('OPERATOR')}
-                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
-                      role === 'OPERATOR'
-                        ? 'bg-brand-500 text-white border-brand-500 shadow-sm'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    Bus Operator
-                  </button>
-                </div>
-              </div>
-
-              {role === 'OPERATOR' && (
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Fleet / Agency Name</label>
-                  <div className="relative">
-                    <Building className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
-                    <input
-                      type="text"
-                      required
-                      value={operatorName}
-                      onChange={(e) => setOperatorName(e.target.value)}
-                      placeholder="e.g. SilkRoad Star Express"
-                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-brand-500 focus:outline-none transition-all"
-                    />
-                  </div>
-                </div>
-              )}
-            </>
+            </div>
           )}
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+            <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
+              Registered Email Address
+            </label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+              <Mail className="absolute left-3.5 top-3 w-4 h-4 text-stone-400" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-brand-500 focus:outline-none transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-[#F3EFEA] dark:bg-stone-800 border border-[#E7E2DA] dark:border-stone-700 rounded-xl text-xs font-bold text-[#1C1917] dark:text-white focus:outline-none focus:border-[#B91C1C]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Password</label>
+            <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
+              Password
+            </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+              <Lock className="absolute left-3.5 top-3 w-4 h-4 text-stone-400" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-brand-500 focus:outline-none transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-[#F3EFEA] dark:bg-stone-800 border border-[#E7E2DA] dark:border-stone-700 rounded-xl text-xs font-bold text-[#1C1917] dark:text-white focus:outline-none focus:border-[#B91C1C]"
               />
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-coral-500 hover:bg-coral-600 active:scale-[0.99] text-white font-bold text-sm rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer"
-          >
-            {loading ? (
-              <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
-            ) : (
-              <>
-                <span>{mode === 'login' ? 'Sign In to Rova' : 'Complete Registration'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
+          <div className="flex gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="py-3 px-4 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-bold text-xs rounded-xl cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 py-3 bg-[#1C1917] hover:bg-black text-white font-black text-xs rounded-xl transition-all shadow-xs disabled:opacity-50 cursor-pointer"
+            >
+              {loading
+                ? 'Authenticating...'
+                : mode === 'login'
+                ? `Log in to ${selectedRoleTab === 'PASSENGER' ? 'Passenger View' : selectedRoleTab === 'DRIVER' ? 'Driver HUD' : 'Admin Portal'}`
+                : 'Create Account'}
+            </button>
+          </div>
 
-          {/* Toggle between Login and Register */}
           <div className="text-center pt-2">
-            {mode === 'login' ? (
-              <p className="text-xs text-slate-500">
-                Don't have an account yet?{' '}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode('register');
-                    setError(null);
-                  }}
-                  className="font-bold text-brand-600 hover:underline"
-                >
-                  Create one now
-                </button>
-              </p>
-            ) : (
-              <p className="text-xs text-slate-500">
-                Already registered?{' '}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode('login');
-                    setError(null);
-                  }}
-                  className="font-bold text-brand-600 hover:underline"
-                >
-                  Sign in instead
-                </button>
-              </p>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                setMode(mode === 'login' ? 'register' : 'login');
+                setError(null);
+              }}
+              className="text-xs font-bold text-[#B91C1C] hover:underline cursor-pointer"
+            >
+              {mode === 'login'
+                ? "Don't have an account? Register new user"
+                : 'Already have credentials? Back to Log In'}
+            </button>
           </div>
         </form>
       </div>

@@ -109,43 +109,49 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-8 text-xs font-bold text-[#44403C]">
-            <a href="#routes" className="hover:text-[#B91C1C] transition-colors">
-              Routes &amp; Destinations
-            </a>
-            <button onClick={() => navigate('/fleet')} className="hover:text-[#B91C1C] transition-colors">
-              Fleet Specs
+          {/* Navigation Links with 3 Dedicated Portals */}
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold text-[#44403C]">
+            <button onClick={() => navigate('/passenger')} className="text-[#B91C1C] hover:underline font-black flex items-center gap-1 cursor-pointer">
+              <span>👤 Passenger Portal</span>
             </button>
-            <button onClick={() => navigate('/schedule')} className="hover:text-[#B91C1C] transition-colors">
-              Punjab Schedules
+            <button onClick={() => navigate('/driver')} className="hover:text-[#B91C1C] flex items-center gap-1 cursor-pointer">
+              <span>🚌 Driver HUD</span>
+            </button>
+            <button onClick={() => navigate('/admin')} className="hover:text-[#B91C1C] flex items-center gap-1 cursor-pointer">
+              <span>🛡️ Platform Admin</span>
+            </button>
+            <button onClick={() => navigate('/fleet')} className="hover:text-[#B91C1C] transition-colors cursor-pointer">
+              Fleet &amp; Routes
             </button>
             <a href="#telemetry" className="hover:text-[#B91C1C] transition-colors">
-              Live Telemetry
+              GT Road Radar
             </a>
           </nav>
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate('/dashboard')}
-              className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#1C1917] rounded-full text-xs font-bold border border-[#E7E2DA] transition-all"
+              onClick={() => navigate('/passenger')}
+              className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#1C1917] rounded-full text-xs font-bold border border-[#E7E2DA] transition-all cursor-pointer"
             >
-              <Radio className="w-3.5 h-3.5 text-[#B91C1C] animate-pulse" />
-              <span>Fleet Radar</span>
+              <span>Explore Buses</span>
             </button>
 
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => navigate('/dashboard')}
-                  className="px-4 py-2 bg-[#F3EFEA] text-[#1C1917] rounded-full text-xs font-bold border border-[#E7E2DA]"
+                  onClick={() => {
+                    if (user?.role === 'ADMIN') navigate('/admin');
+                    else if (user?.role === 'OPERATOR') navigate('/driver');
+                    else navigate('/passenger');
+                  }}
+                  className="px-4 py-2 bg-[#F3EFEA] text-[#1C1917] rounded-full text-xs font-bold border border-[#E7E2DA] cursor-pointer"
                 >
-                  {user?.name}
+                  {user?.name} ({user?.role})
                 </button>
                 <button
                   onClick={logout}
-                  className="text-xs font-bold text-[#78716C] hover:text-[#B91C1C]"
+                  className="text-xs font-bold text-[#78716C] hover:text-[#B91C1C] cursor-pointer"
                 >
                   Logout
                 </button>
@@ -153,7 +159,7 @@ export const LandingPage: React.FC = () => {
             ) : (
               <button
                 onClick={() => setAuthModalOpen(true)}
-                className="text-xs font-bold text-[#44403C] hover:text-[#B91C1C] px-3 py-2"
+                className="text-xs font-bold text-[#44403C] hover:text-[#B91C1C] px-3 py-2 cursor-pointer"
               >
                 Sign In
               </button>
@@ -161,7 +167,13 @@ export const LandingPage: React.FC = () => {
 
             {/* Red 'Book Journey' CTA */}
             <button
-              onClick={() => handleInitiateBooking()}
+              onClick={() => {
+                if (!isAuthenticated) {
+                  setAuthModalOpen(true);
+                } else {
+                  navigate('/passenger');
+                }
+              }}
               className="px-5 py-2.5 bg-[#B91C1C] hover:bg-[#991B1B] active:scale-[0.98] text-white rounded-full text-xs font-black shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <span>Book Journey</span>

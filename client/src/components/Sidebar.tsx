@@ -23,16 +23,14 @@ export const Sidebar: React.FC = () => {
 
   const navItems = [
     { label: 'Landing Page', path: '/landing', icon: Globe },
-    { label: 'Operations HUD', path: '/dashboard', icon: LayoutDashboard },
-    { label: 'Passenger HUD', path: '/passenger-dashboard', icon: UserCheck },
-    { label: 'Driver / Owner HUD', path: '/driver-dashboard', icon: Bus },
-    { label: 'Admin Radar & Rev', path: '/admin-dashboard', icon: Radio },
-    { label: 'Bookings', path: '/bookings', icon: Ticket },
+    { label: 'Passenger Portal', path: '/passenger', icon: UserCheck },
+    { label: 'Driver Cockpit', path: '/driver', icon: Bus },
+    { label: 'Platform Admin', path: '/admin', icon: Radio },
+    { label: 'Seat Bookings', path: '/bookings', icon: Ticket },
     { label: 'Bus Fleet & Routes', path: '/fleet', icon: Bus },
-    { label: 'Schedule', path: '/schedule', icon: Calendar },
-    { label: 'Customer Management', path: '/customers', icon: Users },
+    { label: 'Schedules', path: '/schedule', icon: Calendar },
+    { label: 'Customer Manifest', path: '/customers', icon: Users },
     { label: 'Analytics & Reports', path: '/analytics', icon: BarChart3 },
-    { label: 'Settings', path: '/admin', icon: Settings },
   ];
 
   const isActive = (path: string) => {

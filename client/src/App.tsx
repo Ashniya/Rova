@@ -92,7 +92,15 @@ export const App: React.FC = () => {
                   }
                 />
 
-                {/* Passenger Dashboard */}
+                {/* Passenger Portal */}
+                <Route
+                  path="/passenger"
+                  element={
+                    <DashboardLayout>
+                      <PassengerDashboard />
+                    </DashboardLayout>
+                  }
+                />
                 <Route
                   path="/passenger-dashboard"
                   element={
@@ -104,6 +112,14 @@ export const App: React.FC = () => {
 
                 {/* Driver / Bus Owner Dashboard */}
                 <Route
+                  path="/driver"
+                  element={
+                    <DashboardLayout>
+                      <DriverOwnerDashboard />
+                    </DashboardLayout>
+                  }
+                />
+                <Route
                   path="/driver-dashboard"
                   element={
                     <DashboardLayout>
@@ -112,7 +128,15 @@ export const App: React.FC = () => {
                   }
                 />
 
-                {/* Super Admin Dashboard (Payments & GPS Radar) */}
+                {/* Super Admin Dashboard (Payments, Buses, Driver Assignments) */}
+                <Route
+                  path="/admin"
+                  element={
+                    <DashboardLayout>
+                      <AdminDashboard />
+                    </DashboardLayout>
+                  }
+                />
                 <Route
                   path="/admin-dashboard"
                   element={
