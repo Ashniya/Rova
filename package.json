@@ -1,0 +1,27 @@
+{
+  "name": "rova",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rova - Bus Booking Management System for ALGIONS AI LABS Assessment",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "build": "npm run build:server && npm run build:client",
+    "test": "npm --prefix server test",
+    "seed": "npm --prefix server run seed"
+  },
+  "keywords": [
+    "bus-booking",
+    "seat-management",
+    "pnr-ticketing",
+    "concurrency",
+    "prisma",
+    "express",
+    "react"
+  ],
+  "author": "ALGIONS Full-Stack Assessment Candidate",
+  "license": "ISC"
+}

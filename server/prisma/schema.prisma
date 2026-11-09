@@ -1,0 +1,239 @@
+// Prisma schema for Rova Bus Booking Management System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  phone        String?
+  role         String     @default("PASSENGER") // PASSENGER, OPERATOR, ADMIN
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  bookings     Booking[]
+  operator     Operator?
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Operator {
+  id           String   @id @default(uuid())
+  name         String
+  code         String   @unique
+  contactEmail String
+  contactPhone String
+  address      String?
+  rating       Float    @default(4.5)
+  userId       String?  @unique
+  user         User?    @relation(fields: [userId], references: [id])
+  buses        Bus[]
+  createdAt    DateTime @default(now())
+
+  @@map("operators")
+}
+
+model Bus {
+  id                 String   @id @default(uuid())
+  registrationNumber String   @unique
+  name               String
+  busType            String   @default("AC_SEATER") // AC_SLEEPER, AC_SEATER, NON_AC_SEATER, LUXURY_VOLVO
+  totalSeats         Int
+  layoutType         String   @default("2x2") // 2x2, 2x1, SLEEPER_1x2
+  operatorId         String
+  operator           Operator @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+  seats              Seat[]
+  trips              Trip[]
+  createdAt          DateTime @default(now())
+
+  @@map("buses")
+}
+
+model Seat {
+  id           String        @id @default(uuid())
+  seatNumber   String
+  deck         String        @default("LOWER") // LOWER, UPPER
+  seatType     String        @default("SEATER") // SEATER, SLEEPER
+  isWomenOnly  Boolean       @default(false)
+  row          Int
+  column       Int
+  busId        String
+  bus          Bus           @relation(fields: [busId], references: [id], onDelete: Cascade)
+  bookingSeats BookingSeat[]
+
+  @@unique([busId, seatNumber, deck])
+  @@map("seats")
+}
+
+model Route {
+  id               String      @id @default(uuid())
+  origin           String
+  destination      String
+  distanceKm       Float
+  estimatedMinutes Int
+  trips            Trip[]
+  routeStops       RouteStop[]
+  createdAt        DateTime    @default(now())
+
+  @@unique([origin, destination])
+  @@map("routes")
+}
+
+model Stop {
+  id         String      @id @default(uuid())
+  name       String
+  city       String
+  landmark   String?
+  latitude   Float?
+  longitude  Float?
+  routeStops RouteStop[]
+
+  @@map("stops")
+}
+
+model RouteStop {
+  id                  String @id @default(uuid())
+  routeId             String
+  stopId              String
+  stopType            String @default("BOTH") // BOARDING, DROPPING, BOTH
+  sequence            Int
+  timeFromStartMinutes Int
+  route               Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  stop                Stop   @relation(fields: [stopId], references: [id], onDelete: Cascade)
+
+  @@unique([routeId, stopId])
+  @@map("route_stops")
+}
+
+model Trip {
+  id            String        @id @default(uuid())
+  busId         String
+  routeId       String
+  departureTime DateTime
+  arrivalTime   DateTime
+  basePrice     Float
+  status        String        @default("SCHEDULED") // SCHEDULED, ON_TIME, DELAYED, CANCELLED, COMPLETED
+  bus           Bus           @relation(fields: [busId], references: [id])
+  route         Route         @relation(fields: [routeId], references: [id])
+  bookings      Booking[]
+  disruptions   Disruption[]
+  createdAt     DateTime      @default(now())
+
+  @@map("trips")
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  pnr           String        @unique
+  userId        String?
+  passengerName String
+  contactEmail  String
+  contactPhone  String
+  tripId        String
+  totalAmount   Float
+  status        String        @default("CONFIRMED") // PENDING, CONFIRMED, CANCELLED
+  bookingDate   DateTime      @default(now())
+  user          User?         @relation(fields: [userId], references: [id])
+  trip          Trip          @relation(fields: [tripId], references: [id])
+  bookingSeats  BookingSeat[]
+  payment       Payment?
+  refund        Refund?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("bookings")
+}
+
+model BookingSeat {
+  id              String   @id @default(uuid())
+  bookingId       String
+  tripId          String
+  seatId          String
+  passengerName   String
+  passengerAge    Int
+  passengerGender String   @default("OTHER") // MALE, FEMALE, OTHER
+  seatPrice       Float
+  status          String   @default("CONFIRMED") // RESERVED, CONFIRMED, CANCELLED
+  booking         Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  seat            Seat     @relation(fields: [seatId], references: [id])
+
+  @@unique([bookingId, seatId])
+  @@index([tripId, seatId, status])
+  @@map("booking_seats")
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  bookingId     String   @unique
+  transactionId String   @unique
+  amount        Float
+  paymentMethod String   @default("CARD") // CARD, UPI, NET_BANKING, WALLET
+  status        String   @default("SUCCESS") // SUCCESS, FAILED, PENDING
+  paymentDate   DateTime @default(now())
+  booking       Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Refund {
+  id                 String   @id @default(uuid())
+  bookingId          String   @unique
+  refundAmount       Float
+  deductionAmount    Float
+  cancellationReason String?
+  status             String   @default("PROCESSED") // PROCESSED, PENDING, FAILED
+  processedAt        DateTime @default(now())
+  booking            Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("refunds")
+}
+
+model Disruption {
+  id                String           @id @default(uuid())
+  tripId            String
+  disruptionType    String           @default("DELAY") // DELAY, CANCELLATION, BREAKDOWN, ROUTE_DIVERSION
+  originalDeparture DateTime
+  revisedDeparture  DateTime?
+  reason            String
+  status            String           @default("ACTIVE") // ACTIVE, RESOLVED
+  trip              Trip             @relation(fields: [tripId], references: [id])
+  recoveryOptions   RecoveryOption[]
+  createdAt         DateTime         @default(now())
+
+  @@map("disruptions")
+}
+
+model RecoveryOption {
+  id                   String     @id @default(uuid())
+  disruptionId         String
+  originalTripId       String
+  alternativeTripId    String
+  compensationOffered  String?
+  autoTransferEligible Boolean    @default(true)
+  notes                String?
+  disruption           Disruption @relation(fields: [disruptionId], references: [id], onDelete: Cascade)
+
+  @@map("recovery_options")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  entity    String
+  entityId  String
+  userId    String?
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}

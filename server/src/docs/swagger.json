@@ -1,0 +1,238 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Rova Bus Booking Management System API",
+    "version": "1.0.0",
+    "description": "Comprehensive REST API for Rova - Where routes become journeys. Supports full lifecycle passenger booking, atomic seat locking, operator fleet/schedule/manifest management, configurable cancellations, and Journey Recovery Engine."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register a new user (Passenger, Operator, Admin)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" },
+                  "phone": { "type": "string" },
+                  "role": { "type": "string", "enum": ["PASSENGER", "OPERATOR", "ADMIN"] },
+                  "operatorName": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created successfully" },
+          "409": { "description": "User already exists" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Authenticate user and issue JWT token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful with token" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "summary": "Get authenticated user profile and roles",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Current profile details" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/trips": {
+      "get": {
+        "summary": "Search scheduled bus trips with filters and real-time seat availability",
+        "parameters": [
+          { "name": "origin", "in": "query", "schema": { "type": "string" } },
+          { "name": "destination", "in": "query", "schema": { "type": "string" } },
+          { "name": "date", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "busType", "in": "query", "schema": { "type": "string" } },
+          { "name": "maxPrice", "in": "query", "schema": { "type": "number" } }
+        ],
+        "responses": {
+          "200": { "description": "List of available trips matching criteria" }
+        }
+      }
+    },
+    "/api/trips/{id}": {
+      "get": {
+        "summary": "Get detailed seat layout map and occupancy for a specific trip",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Detailed trip information with seat grid status" },
+          "404": { "description": "Trip not found" }
+        }
+      }
+    },
+    "/api/bookings": {
+      "post": {
+        "summary": "Create a new booking with atomic seat reservation (concurrency protected)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["tripId", "passengers", "contactEmail", "contactPhone"],
+                "properties": {
+                  "tripId": { "type": "string" },
+                  "contactEmail": { "type": "string" },
+                  "contactPhone": { "type": "string" },
+                  "paymentMethod": { "type": "string" },
+                  "passengers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["seatId", "passengerName"],
+                      "properties": {
+                        "seatId": { "type": "string" },
+                        "passengerName": { "type": "string" },
+                        "passengerAge": { "type": "integer" },
+                        "passengerGender": { "type": "string", "enum": ["MALE", "FEMALE", "OTHER"] }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Booking confirmed with PNR and payment transaction" },
+          "409": { "description": "Seat conflict: One or more selected seats were already booked" }
+        }
+      }
+    },
+    "/api/bookings/{pnr}": {
+      "get": {
+        "summary": "Lookup booking ticket and cancellation estimate by PNR",
+        "parameters": [
+          { "name": "pnr", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Booking ticket details and live cancellation estimate" },
+          "404": { "description": "Booking not found" }
+        }
+      }
+    },
+    "/api/bookings/{pnr}/cancel": {
+      "post": {
+        "summary": "Cancel booking, release seats, and calculate refund according to policy",
+        "parameters": [
+          { "name": "pnr", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Booking cancelled and simulated refund processed" },
+          "400": { "description": "Booking already cancelled" }
+        }
+      }
+    },
+    "/api/operator/manifest/{tripId}": {
+      "get": {
+        "summary": "Get official passenger manifest for conductor and operations",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "tripId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Passenger manifest list" }
+        }
+      }
+    },
+    "/api/operator/trips/{tripId}/disruption": {
+      "post": {
+        "summary": "Report trip delay/cancellation to trigger Journey Recovery Engine",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "tripId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["disruptionType", "reason"],
+                "properties": {
+                  "disruptionType": { "type": "string", "enum": ["DELAY", "CANCELLATION", "BREAKDOWN"] },
+                  "revisedDeparture": { "type": "string", "format": "date-time" },
+                  "reason": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Disruption processed and recovery options generated" }
+        }
+      }
+    },
+    "/api/admin/audit-logs": {
+      "get": {
+        "summary": "Retrieve audit trail of material business operations",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Paginated audit logs" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
