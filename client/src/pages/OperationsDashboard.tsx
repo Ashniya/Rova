@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import PassengerDashboard from './PassengerDashboard';
+import DriverOwnerDashboard from './DriverOwnerDashboard';
+import AdminDashboard from './AdminDashboard';
 import {
   DollarSign,
   Ticket,
@@ -41,6 +45,8 @@ interface CoachTelemetry {
 
 export const OperationsDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [activeRoleView, setActiveRoleView] = useState<'AUTO' | 'PASSENGER' | 'DRIVER' | 'ADMIN' | 'OPERATIONS'>('AUTO');
   const [activeRadarTab, setActiveRadarTab] = useState<'all' | 'active' | 'boarding' | 'delayed'>('active');
   const [selectedCoachId, setSelectedCoachId] = useState<string>('PB-9921');
   const [selectedRouteFilter, setSelectedRouteFilter] = useState<string>('ALL');
@@ -213,8 +219,112 @@ export const OperationsDashboard: React.FC = () => {
     document.body.removeChild(link);
   };
 
+  // Resolve role view automatically based on logged-in user
+  const effectiveView =
+    activeRoleView === 'AUTO'
+      ? user?.role === 'PASSENGER'
+        ? 'PASSENGER'
+        : user?.role === 'ADMIN'
+        ? 'ADMIN'
+        : user?.role === 'OPERATOR'
+        ? 'DRIVER'
+        : 'OPERATIONS'
+      : activeRoleView;
+
+  const renderRoleSwitcher = () => (
+    <div className="px-4 sm:px-8 pt-4 pb-2 max-w-[1600px] mx-auto">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-stone-900 p-3 rounded-2xl border border-[#E7E2DA] dark:border-stone-800 shadow-xs">
+        <div className="flex items-center gap-2 pl-2">
+          <span className="text-[10px] font-black uppercase tracking-wider text-stone-400">
+            Active Workspace Role:
+          </span>
+          <span className="text-xs font-black text-[#B91C1C] dark:text-[#F87171]">
+            {user ? `${user.name} (${user.role})` : 'Demo Visitor'}
+          </span>
+        </div>
+
+        {/* 4-way Role Switcher */}
+        <div className="flex flex-wrap items-center gap-1 bg-[#F3EFEA] dark:bg-stone-800 p-1 rounded-xl">
+          <button
+            type="button"
+            onClick={() => setActiveRoleView('PASSENGER')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              effectiveView === 'PASSENGER'
+                ? 'bg-[#B91C1C] text-white shadow-xs'
+                : 'text-stone-600 hover:text-stone-900 dark:text-stone-300'
+            }`}
+          >
+            👤 Passenger HUD
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveRoleView('DRIVER')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              effectiveView === 'DRIVER'
+                ? 'bg-[#B91C1C] text-white shadow-xs'
+                : 'text-stone-600 hover:text-stone-900 dark:text-stone-300'
+            }`}
+          >
+            🚌 Driver / Bus Owner HUD
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveRoleView('ADMIN')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              effectiveView === 'ADMIN'
+                ? 'bg-[#B91C1C] text-white shadow-xs'
+                : 'text-stone-600 hover:text-stone-900 dark:text-stone-300'
+            }`}
+          >
+            🛡️ Admin Radar & Revenue
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveRoleView('OPERATIONS')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              effectiveView === 'OPERATIONS'
+                ? 'bg-[#B91C1C] text-white shadow-xs'
+                : 'text-stone-600 hover:text-stone-900 dark:text-stone-300'
+            }`}
+          >
+            🌐 All Operations
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (effectiveView === 'PASSENGER') {
+    return (
+      <div className="space-y-2">
+        {renderRoleSwitcher()}
+        <PassengerDashboard />
+      </div>
+    );
+  }
+
+  if (effectiveView === 'DRIVER') {
+    return (
+      <div className="space-y-2">
+        {renderRoleSwitcher()}
+        <DriverOwnerDashboard />
+      </div>
+    );
+  }
+
+  if (effectiveView === 'ADMIN') {
+    return (
+      <div className="space-y-2">
+        {renderRoleSwitcher()}
+        <AdminDashboard />
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 sm:p-8 space-y-6 max-w-[1600px] mx-auto animate-fadeIn text-slate-800 dark:text-slate-100">
+    <div className="space-y-2">
+      {renderRoleSwitcher()}
+      <div className="p-6 sm:p-8 space-y-6 max-w-[1600px] mx-auto animate-fadeIn text-slate-800 dark:text-slate-100">
       {/* Good Morning, Operations! Top Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
@@ -762,7 +872,8 @@ export const OperationsDashboard: React.FC = () => {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default OperationsDashboard;

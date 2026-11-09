@@ -11,6 +11,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Globe,
+  UserCheck,
+  ShieldAlert,
+  Radio,
 } from 'lucide-react';
 import { useSidebar } from '../context/SidebarContext';
 
@@ -20,7 +23,10 @@ export const Sidebar: React.FC = () => {
 
   const navItems = [
     { label: 'Landing Page', path: '/landing', icon: Globe },
-    { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Operations HUD', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Passenger HUD', path: '/passenger-dashboard', icon: UserCheck },
+    { label: 'Driver / Owner HUD', path: '/driver-dashboard', icon: Bus },
+    { label: 'Admin Radar & Rev', path: '/admin-dashboard', icon: Radio },
     { label: 'Bookings', path: '/bookings', icon: Ticket },
     { label: 'Bus Fleet & Routes', path: '/fleet', icon: Bus },
     { label: 'Schedule', path: '/schedule', icon: Calendar },

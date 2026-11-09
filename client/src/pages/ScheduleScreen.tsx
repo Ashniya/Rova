@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 import { format } from 'date-fns';
-import { Calendar, Plus, Clock, AlertTriangle, Bus, MapPin, CheckCircle2 } from 'lucide-react';
+import { Calendar, Plus, Clock, AlertTriangle, Bus, MapPin, CheckCircle2, X } from 'lucide-react';
 import RecoveryBanner from '../components/RecoveryBanner';
 
 export const ScheduleScreen: React.FC = () => {
@@ -176,7 +176,15 @@ export const ScheduleScreen: React.FC = () => {
       {/* New Schedule Modal */}
       {newTripOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
+          <div className="relative bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
+            <button
+              type="button"
+              onClick={() => setNewTripOpen(false)}
+              className="absolute top-5 right-5 p-2 text-stone-400 hover:text-stone-800 rounded-full hover:bg-stone-100 transition-colors"
+              title="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
             <h3 className="text-lg font-black text-slate-900 mb-4">Add Departure Schedule</h3>
             <form
               onSubmit={(e) => {
@@ -277,7 +285,15 @@ export const ScheduleScreen: React.FC = () => {
       {/* Disruption Modal */}
       {disruptionTripId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
+          <div className="relative bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
+            <button
+              type="button"
+              onClick={() => setDisruptionTripId(null)}
+              className="absolute top-5 right-5 p-2 text-stone-400 hover:text-stone-800 rounded-full hover:bg-stone-100 transition-colors"
+              title="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
             <h3 className="text-lg font-black text-slate-900 mb-2">Report Trip Disruption</h3>
             <p className="text-xs text-slate-500 mb-4">
               Invokes the Journey Recovery Engine to calculate alternate travel options and issue goodwill compensation vouchers.

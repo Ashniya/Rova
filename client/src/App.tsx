@@ -15,6 +15,9 @@ import ScheduleScreen from './pages/ScheduleScreen';
 import CustomerManagementScreen from './pages/CustomerManagementScreen';
 import AnalyticsScreen from './pages/AnalyticsScreen';
 import AdminPage from './pages/AdminPage';
+import PassengerDashboard from './pages/PassengerDashboard';
+import DriverOwnerDashboard from './pages/DriverOwnerDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -79,12 +82,42 @@ export const App: React.FC = () => {
                   element={<RovaIntro onComplete={() => (window.location.href = '/')} durationSeconds={3} />}
                 />
 
-                {/* Operations Dashboard */}
+                {/* Operations Dashboard (Intelligently adapts to role + switcher) */}
                 <Route
                   path="/dashboard"
                   element={
                     <DashboardLayout>
                       <OperationsDashboard />
+                    </DashboardLayout>
+                  }
+                />
+
+                {/* Passenger Dashboard */}
+                <Route
+                  path="/passenger-dashboard"
+                  element={
+                    <DashboardLayout>
+                      <PassengerDashboard />
+                    </DashboardLayout>
+                  }
+                />
+
+                {/* Driver / Bus Owner Dashboard */}
+                <Route
+                  path="/driver-dashboard"
+                  element={
+                    <DashboardLayout>
+                      <DriverOwnerDashboard />
+                    </DashboardLayout>
+                  }
+                />
+
+                {/* Super Admin Dashboard (Payments & GPS Radar) */}
+                <Route
+                  path="/admin-dashboard"
+                  element={
+                    <DashboardLayout>
+                      <AdminDashboard />
                     </DashboardLayout>
                   }
                 />

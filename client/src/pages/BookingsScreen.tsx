@@ -733,18 +733,27 @@ export const BookingsScreen: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-4 bg-[#F3EFEA] rounded-2xl border border-[#E7E2DA] flex items-center justify-between">
+              <div className="p-4 bg-[#F3EFEA] rounded-2xl border border-[#E7E2DA] flex items-center justify-between gap-3">
                 <div>
                   <span className="text-[10px] text-stone-400 uppercase font-bold">Total Amount</span>
                   <p className="text-xl font-black text-[#1C1917]">₹{subtotalDue.toFixed(2)}</p>
                 </div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-6 py-3 bg-[#B91C1C] hover:bg-[#991B1B] text-white font-black text-xs rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
-                >
-                  {isSubmitting ? 'Verifying & Confirming...' : 'Pay & Issue Ticket'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCheckoutOpen(false)}
+                    className="px-4 py-3 bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-6 py-3 bg-[#B91C1C] hover:bg-[#991B1B] text-white font-black text-xs rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSubmitting ? 'Verifying & Confirming...' : 'Pay & Issue Ticket'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -754,7 +763,15 @@ export const BookingsScreen: React.FC = () => {
       {/* Confirmed Ticket Boarding Pass Modal */}
       {confirmedBooking && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-[#E7E2DA] space-y-5">
+          <div className="relative bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-[#E7E2DA] space-y-5">
+            <button
+              type="button"
+              onClick={() => setConfirmedBooking(null)}
+              className="absolute top-5 right-5 p-2 text-stone-400 hover:text-stone-800 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
+              title="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
             <div className="text-center space-y-1">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-2">
                 <Check className="w-6 h-6 stroke-[3]" />
