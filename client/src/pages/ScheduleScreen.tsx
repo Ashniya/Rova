@@ -88,7 +88,7 @@ export const ScheduleScreen: React.FC = () => {
 
         <button
           onClick={() => setNewTripOpen(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-coral-500 hover:bg-coral-600 text-white rounded-2xl text-xs font-black shadow-coral transition-all"
+          className="flex items-center gap-2 px-5 py-2.5 bg-coral-500 hover:bg-coral-600 text-white rounded-2xl text-xs font-black shadow-sm transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
           <span>+ Add Schedule</span>

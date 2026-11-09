@@ -82,7 +82,7 @@ export const CustomerManagementScreen: React.FC = () => {
           <button
             type="submit"
             disabled={searchLoading}
-            className="px-6 py-2.5 bg-coral-500 hover:bg-coral-600 text-white font-bold text-xs rounded-xl shadow-coral transition-all"
+            className="px-6 py-2.5 bg-coral-500 hover:bg-coral-600 text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer"
           >
             {searchLoading ? 'Searching...' : 'Find Ticket'}
           </button>

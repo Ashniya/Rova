@@ -176,7 +176,7 @@ export const BookingsScreen: React.FC = () => {
             onClick={() => setActiveSubTab('buy')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-black transition-all ${
               activeSubTab === 'buy'
-                ? 'bg-coral-500 text-white shadow-coral'
+                ? 'bg-coral-500 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
@@ -457,7 +457,7 @@ export const BookingsScreen: React.FC = () => {
                         onClick={() => handleToggleSeat(seatCode)}
                         className={`w-9 h-10 rounded-xl flex flex-col items-center justify-center text-[10px] font-bold transition-all ${
                           isSelected
-                            ? 'bg-brand-500 text-white shadow-md shadow-brand-500/30 scale-105'
+                            ? 'bg-brand-500 text-white shadow-xs scale-105'
                             : isSold
                             ? 'bg-coral-500 text-white cursor-not-allowed shadow-xs'
                             : isLocked
@@ -554,7 +554,7 @@ export const BookingsScreen: React.FC = () => {
                 type="button"
                 disabled={selectedSeatCodes.length === 0}
                 onClick={() => setIsCheckoutOpen(true)}
-                className="w-full py-4 bg-coral-500 hover:bg-coral-600 active:scale-[0.99] text-white font-black text-sm rounded-2xl shadow-coral flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full py-4 bg-coral-500 hover:bg-coral-600 active:scale-[0.99] text-white font-black text-sm rounded-2xl shadow-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
               >
                 <span>Confirm & Proceed to Payment</span>
                 <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -668,7 +668,7 @@ export const BookingsScreen: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-3 bg-coral-500 hover:bg-coral-600 text-white font-black text-xs rounded-xl shadow-coral transition-all disabled:opacity-50"
+                  className="px-6 py-3 bg-coral-500 hover:bg-coral-600 text-white font-black text-xs rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? 'Confirming Seats...' : 'Authorize & Issue PNR'}
                 </button>
