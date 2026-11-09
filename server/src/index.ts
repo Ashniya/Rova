@@ -6,6 +6,9 @@ import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './docs/swagger.json';
 
+import path from 'path';
+import fs from 'fs';
+
 import authRoutes from './routes/authRoutes';
 import tripRoutes from './routes/tripRoutes';
 import bookingRoutes from './routes/bookingRoutes';
@@ -66,10 +69,25 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/operator', operatorRoutes);
 app.use('/api/admin', adminRoutes);
 
-// 404 handler
-app.use((_req, res) => {
-  res.status(404).json({ success: false, message: 'Endpoint not found' });
-});
+// Serve client static build if present
+const clientDistPath = path.resolve(__dirname, '../../client/dist');
+const altClientDistPath = path.resolve(__dirname, '../client/dist');
+const finalDistPath = fs.existsSync(clientDistPath) ? clientDistPath : fs.existsSync(altClientDistPath) ? altClientDistPath : null;
+
+if (finalDistPath) {
+  app.use(express.static(finalDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(finalDistPath, 'index.html'));
+  });
+} else {
+  // 404 handler
+  app.use((_req, res) => {
+    res.status(404).json({ success: false, message: 'Endpoint not found' });
+  });
+}
 
 // Global error handler
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
