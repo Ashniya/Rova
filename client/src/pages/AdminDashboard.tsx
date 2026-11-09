@@ -30,8 +30,8 @@ import BusSeatChassis from '../components/BusSeatChassis';
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'fleet' | 'radar' | 'audit'>('overview');
-  const [buses, setBuses] = useState<BusData[]>([]);
-  const [selectedCoachId, setSelectedCoachId] = useState<string>('bus-1');
+  const [buses, setBuses] = useState<BusData[]>(() => fleetService.getBuses());
+  const [selectedCoachId, setSelectedCoachId] = useState<string>(() => fleetService.getBuses()[0]?.id || 'bus-1');
   const [addBusModalOpen, setAddBusModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -264,7 +264,7 @@ export const AdminDashboard: React.FC = () => {
                   Bus Seat Occupancy Inspector
                 </h3>
                 <p className="text-xs text-stone-500 dark:text-stone-400">
-                  {selectedBus.name} ({selectedBus.registrationNumber})
+                  {selectedBus ? `${selectedBus.name} (${selectedBus.registrationNumber})` : 'Select a bus'}
                 </p>
               </div>
               <select

@@ -25,7 +25,10 @@ export const DriverOwnerDashboard: React.FC = () => {
   const { user } = useAuth();
 
   // The driver's assigned bus: by default PB-02-AK-9921 (Gurpreet Singh)
-  const [driverBus, setDriverBus] = useState<BusData | null>(null);
+  const [driverBus, setDriverBus] = useState<BusData | null>(() => {
+    const buses = fleetService.getBuses();
+    return buses.find((b) => b.driverName.toLowerCase().includes('gurpreet')) || buses[0] || null;
+  });
   const [activeTab, setActiveTab] = useState<'seats' | 'manifest'>('seats');
   const [hoveredPassenger, setHoveredPassenger] = useState<PassengerInfo | null>(null);
   const [selectedPassenger, setSelectedPassenger] = useState<PassengerInfo | null>(null);

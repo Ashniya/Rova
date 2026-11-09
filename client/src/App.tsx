@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { SidebarProvider } from './context/SidebarContext';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import RovaIntro from './components/RovaIntro';
+import AuthModal from './components/AuthModal';
 import LandingPage from './pages/LandingPage';
 import OperationsDashboard from './pages/OperationsDashboard';
 import BookingsScreen from './pages/BookingsScreen';
@@ -50,174 +51,210 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
   );
 };
 
-export const App: React.FC = () => {
-  const [showIntro, setShowIntro] = useState<boolean>(() => {
-    // Show 3-second MaskedHeading intro on first session load
-    const seen = sessionStorage.getItem('rova_intro_seen');
-    return !seen;
-  });
+// Route Guard requiring authentication before entering Driver or Admin areas
+const ProtectedRoute: React.FC<{
+  children: React.ReactNode;
+  requiredRole?: 'PASSENGER' | 'DRIVER' | 'ADMIN';
+}> = ({ children, requiredRole = 'PASSENGER' }) => {
+  const { user, loading, isAuthenticated } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FBF9F7] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#B91C1C] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  const hasAccess =
+    isAuthenticated &&
+    user &&
+    (requiredRole === 'PASSENGER' ||
+      (requiredRole === 'DRIVER' && (user.role === 'OPERATOR' || user.role === 'ADMIN')) ||
+      (requiredRole === 'ADMIN' && user.role === 'ADMIN'));
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-[#1C1917] flex items-center justify-center p-4">
+        <AuthModal
+          isOpen={true}
+          defaultRole={requiredRole}
+          onClose={() => {
+            window.location.href = '/landing';
+          }}
+          onSuccess={() => {}}
+        />
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
+
+export const AppContent: React.FC = () => {
+  // Loading page shows on every initial run/load, then transitions to landing page
+  const [showIntro, setShowIntro] = useState<boolean>(true);
 
   const handleIntroComplete = () => {
-    sessionStorage.setItem('rova_intro_seen', 'true');
     setShowIntro(false);
   };
 
+  return (
+    <>
+      {/* Animated Rova Loading Screen (MaskedHeading + Tagline Typewriter) */}
+      {showIntro && <RovaIntro onComplete={handleIntroComplete} durationSeconds={3} />}
+
+      <Router>
+        <Routes>
+          {/* Landing Page is the default entry point */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/landing" element={<LandingPage />} />
+
+          {/* Replay Intro Route */}
+          <Route
+            path="/intro"
+            element={<RovaIntro onComplete={() => (window.location.href = '/')} durationSeconds={3} />}
+          />
+
+          {/* Operations Dashboard (Intelligently adapts to role + switcher) */}
+          <Route
+            path="/dashboard"
+            element={
+              <DashboardLayout>
+                <OperationsDashboard />
+              </DashboardLayout>
+            }
+          />
+
+          {/* Passenger Portal */}
+          <Route
+            path="/passenger"
+            element={
+              <DashboardLayout>
+                <PassengerDashboard />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/passenger-dashboard"
+            element={
+              <DashboardLayout>
+                <PassengerDashboard />
+              </DashboardLayout>
+            }
+          />
+
+          {/* Driver / Bus Owner Dashboard (Guarded: must be authenticated as driver) */}
+          <Route
+            path="/driver"
+            element={
+              <ProtectedRoute requiredRole="DRIVER">
+                <DashboardLayout>
+                  <DriverOwnerDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/driver-dashboard"
+            element={
+              <ProtectedRoute requiredRole="DRIVER">
+                <DashboardLayout>
+                  <DriverOwnerDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Super Admin Dashboard (Guarded: must be authenticated as admin) */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <DashboardLayout>
+                  <AdminDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <DashboardLayout>
+                  <AdminDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Seat Selection & Booking Screen */}
+          <Route
+            path="/bookings"
+            element={
+              <DashboardLayout>
+                <BookingsScreen />
+              </DashboardLayout>
+            }
+          />
+
+          {/* Operational Management Screens */}
+          <Route
+            path="/fleet"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <DashboardLayout>
+                  <FleetRoutesScreen />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/schedule"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <DashboardLayout>
+                  <ScheduleScreen />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customers"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <DashboardLayout>
+                  <CustomerManagementScreen />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <DashboardLayout>
+                  <AnalyticsScreen />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </>
+  );
+};
+
+export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeProvider>
           <SidebarProvider>
-            {/* 3-second MaskedHeading Rova Intro Animation */}
-            {showIntro && <RovaIntro onComplete={handleIntroComplete} durationSeconds={3} />}
-
-            <Router>
-              <Routes>
-                {/* Landing Page is the default entry point */}
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/landing" element={<LandingPage />} />
-
-                {/* Replay Intro Route */}
-                <Route
-                  path="/intro"
-                  element={<RovaIntro onComplete={() => (window.location.href = '/')} durationSeconds={3} />}
-                />
-
-                {/* Operations Dashboard (Intelligently adapts to role + switcher) */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <DashboardLayout>
-                      <OperationsDashboard />
-                    </DashboardLayout>
-                  }
-                />
-
-                {/* Passenger Portal */}
-                <Route
-                  path="/passenger"
-                  element={
-                    <DashboardLayout>
-                      <PassengerDashboard />
-                    </DashboardLayout>
-                  }
-                />
-                <Route
-                  path="/passenger-dashboard"
-                  element={
-                    <DashboardLayout>
-                      <PassengerDashboard />
-                    </DashboardLayout>
-                  }
-                />
-
-                {/* Driver / Bus Owner Dashboard */}
-                <Route
-                  path="/driver"
-                  element={
-                    <DashboardLayout>
-                      <DriverOwnerDashboard />
-                    </DashboardLayout>
-                  }
-                />
-                <Route
-                  path="/driver-dashboard"
-                  element={
-                    <DashboardLayout>
-                      <DriverOwnerDashboard />
-                    </DashboardLayout>
-                  }
-                />
-
-                {/* Super Admin Dashboard (Payments, Buses, Driver Assignments) */}
-                <Route
-                  path="/admin"
-                  element={
-                    <DashboardLayout>
-                      <AdminDashboard />
-                    </DashboardLayout>
-                  }
-                />
-                <Route
-                  path="/admin-dashboard"
-                  element={
-                    <DashboardLayout>
-                      <AdminDashboard />
-                    </DashboardLayout>
-                  }
-                />
-
-                {/* Seat Selection & Booking Screen */}
-                <Route
-                  path="/bookings"
-                  element={
-                    <DashboardLayout>
-                      <BookingsScreen />
-                    </DashboardLayout>
-                  }
-                />
-
-                {/* Operational Management Screens */}
-                <Route
-                  path="/fleet"
-                  element={
-                    <DashboardLayout>
-                      <FleetRoutesScreen />
-                    </DashboardLayout>
-                  }
-                />
-                <Route
-                  path="/schedule"
-                  element={
-                    <DashboardLayout>
-                      <ScheduleScreen />
-                    </DashboardLayout>
-                  }
-                />
-                <Route
-                  path="/customers"
-                  element={
-                    <DashboardLayout>
-                      <CustomerManagementScreen />
-                    </DashboardLayout>
-                  }
-                />
-                <Route
-                  path="/my-bookings"
-                  element={
-                    <DashboardLayout>
-                      <CustomerManagementScreen />
-                    </DashboardLayout>
-                  }
-                />
-                <Route
-                  path="/ticket-lookup"
-                  element={
-                    <DashboardLayout>
-                      <CustomerManagementScreen />
-                    </DashboardLayout>
-                  }
-                />
-                <Route
-                  path="/analytics"
-                  element={
-                    <DashboardLayout>
-                      <AnalyticsScreen />
-                    </DashboardLayout>
-                  }
-                />
-                <Route
-                  path="/admin"
-                  element={
-                    <DashboardLayout>
-                      <AdminPage />
-                    </DashboardLayout>
-                  }
-                />
-
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Router>
+            <AppContent />
           </SidebarProvider>
         </ThemeProvider>
       </AuthProvider>

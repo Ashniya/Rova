@@ -1,45 +1,66 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard,
   Ticket,
   Bus,
   Calendar,
   Users,
   BarChart3,
-  Settings,
   ChevronLeft,
   ChevronRight,
   Globe,
-  UserCheck,
-  ShieldAlert,
   Radio,
+  LogOut,
+  User,
+  ShieldCheck,
 } from 'lucide-react';
 import { useSidebar } from '../context/SidebarContext';
+import { useAuth } from '../context/AuthContext';
 
 export const Sidebar: React.FC = () => {
   const location = useLocation();
   const { collapsed, toggleSidebar } = useSidebar();
+  const { user, logout } = useAuth();
 
-  const navItems = [
-    { label: 'Landing Page', path: '/landing', icon: Globe },
-    { label: 'Passenger Portal', path: '/passenger', icon: UserCheck },
-    { label: 'Driver Cockpit', path: '/driver', icon: Bus },
-    { label: 'Platform Admin', path: '/admin', icon: Radio },
-    { label: 'Seat Bookings', path: '/bookings', icon: Ticket },
-    { label: 'Bus Fleet & Routes', path: '/fleet', icon: Bus },
-    { label: 'Schedules', path: '/schedule', icon: Calendar },
-    { label: 'Customer Manifest', path: '/customers', icon: Users },
-    { label: 'Analytics & Reports', path: '/analytics', icon: BarChart3 },
-  ];
+  // Determine portal scope strictly
+  const isDriver = location.pathname.startsWith('/driver') || (!location.pathname.startsWith('/admin') && user?.role === 'OPERATOR');
+  const isPassenger = location.pathname.startsWith('/passenger') || (!location.pathname.startsWith('/admin') && user?.role === 'PASSENGER');
+  const isAdmin = location.pathname.startsWith('/admin') || user?.role === 'ADMIN' || (!isDriver && !isPassenger);
+
+  let portalTitle = 'TRANSIT CONTROL';
+  let portalRoleTag = 'OPERATIONS';
+  let navItems: { label: string; path: string; icon: any }[] = [];
+
+  if (isDriver) {
+    portalTitle = 'DRIVER HUD';
+    portalRoleTag = 'DRIVER COCKPIT';
+    navItems = [
+      { label: 'Landing Page', path: '/landing', icon: Globe },
+      { label: 'My Bus & Live Seats', path: '/driver', icon: Bus },
+    ];
+  } else if (isPassenger) {
+    portalTitle = 'PASSENGER PORTAL';
+    portalRoleTag = 'PASSENGER ACCESS';
+    navItems = [
+      { label: 'Landing Page', path: '/landing', icon: Globe },
+      { label: 'Browse & Book Buses', path: '/passenger', icon: Ticket },
+    ];
+  } else {
+    portalTitle = 'PLATFORM ADMIN';
+    portalRoleTag = 'ADMIN CONSOLE';
+    navItems = [
+      { label: 'Landing Page', path: '/landing', icon: Globe },
+      { label: 'Income & Tickets', path: '/admin', icon: Radio },
+      { label: 'Bus Fleet & Drivers', path: '/fleet', icon: Bus },
+      { label: 'Schedules', path: '/schedule', icon: Calendar },
+      { label: 'Passenger Manifests', path: '/customers', icon: Users },
+      { label: 'Analytics & Reports', path: '/analytics', icon: BarChart3 },
+    ];
+  }
 
   const isActive = (path: string) => {
-    if (path === '/dashboard' && (location.pathname === '/' || location.pathname === '/dashboard')) {
-      return true;
-    }
-    if (path !== '/dashboard' && location.pathname.startsWith(path)) {
-      return true;
-    }
+    if (path === '/landing' && location.pathname === '/landing') return true;
+    if (path !== '/landing' && location.pathname.startsWith(path)) return true;
     return false;
   };
 
@@ -53,7 +74,7 @@ export const Sidebar: React.FC = () => {
         {/* Brand Header */}
         <div className={`border-b border-[#2E2A27] transition-all duration-300 ${collapsed ? 'p-3 flex flex-col items-center' : 'p-6'}`}>
           {collapsed ? (
-            /* Minimized state: Rova title at top with expand button */
+            /* Minimized state */
             <div className="flex flex-col items-center gap-3 w-full">
               <Link
                 to="/landing"
@@ -76,7 +97,7 @@ export const Sidebar: React.FC = () => {
               </button>
             </div>
           ) : (
-            /* Expanded state: Full Rova title + Tagline + Minimize button */
+            /* Expanded state */
             <div className="flex items-start justify-between">
               <Link to="/landing" className="flex flex-col group">
                 <div className="flex items-center gap-2">
@@ -90,8 +111,8 @@ export const Sidebar: React.FC = () => {
                 <span className="text-[10px] font-bold tracking-wide text-stone-300 mt-2">
                   Where routes become journeys
                 </span>
-                <span className="text-[9px] tracking-widest text-stone-500 uppercase mt-0.5 font-semibold">
-                  TRANSIT CONTROL HUD
+                <span className="text-[9px] tracking-widest text-[#F59E0B] uppercase mt-0.5 font-bold">
+                  {portalTitle}
                 </span>
               </Link>
               <button
@@ -108,11 +129,11 @@ export const Sidebar: React.FC = () => {
         {/* Section Label */}
         <div className={`pt-4 pb-2 ${collapsed ? 'text-center' : 'px-6'}`}>
           <span className="text-[9px] font-bold tracking-widest text-stone-500 uppercase">
-            {collapsed ? 'OPS' : 'OPERATIONS'}
+            {collapsed ? 'NAV' : portalRoleTag}
           </span>
         </div>
 
-        {/* Navigation Links */}
+        {/* Navigation Links strictly isolated for this role */}
         <nav className="px-2.5 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -141,32 +162,36 @@ export const Sidebar: React.FC = () => {
         </nav>
       </div>
 
-      {/* Fleet Dispatch Status Pill at the bottom */}
-      <div className={`m-3 transition-all duration-300 ${collapsed ? 'p-2 text-center' : 'p-4'} bg-stone-900 border border-stone-800 rounded-2xl`}>
-        {collapsed ? (
-          <div className="flex flex-col items-center gap-1" title="Fleet Dispatch 99.8% Active">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-            </span>
-            <span className="text-[9px] font-mono font-bold text-emerald-400">99.8%</span>
-          </div>
-        ) : (
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="text-[11px] font-bold text-white tracking-wide">Fleet Dispatch</span>
-              </div>
-              <span className="text-[10px] font-mono text-emerald-400 font-bold">99.8%</span>
+      {/* Footer Area with User Profile & Logout */}
+      <div className="p-3 border-t border-stone-800 space-y-2">
+        {!collapsed && user && (
+          <div className="px-3 py-2 bg-stone-900 rounded-xl border border-stone-800 flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[#B91C1C] text-white flex items-center justify-center text-xs font-black">
+              {user.name.charAt(0).toUpperCase()}
             </div>
-            <p className="text-[10px] text-stone-400 leading-tight">
-              51 of 52 coaches transmitting active GPS telemetry.
-            </p>
+            <div className="truncate flex-1">
+              <span className="text-xs font-bold text-white block truncate">{user.name}</span>
+              <span className="text-[10px] text-stone-400 font-mono block leading-none">
+                {user.role}
+              </span>
+            </div>
           </div>
+        )}
+
+        {user && (
+          <button
+            onClick={() => {
+              logout();
+              window.location.href = '/landing';
+            }}
+            title="Log out of system"
+            className={`w-full flex items-center rounded-xl text-xs font-bold text-stone-400 hover:text-red-400 hover:bg-stone-900 transition-colors cursor-pointer ${
+              collapsed ? 'justify-center p-2.5' : 'gap-2 px-3 py-2'
+            }`}
+          >
+            <LogOut className="w-4 h-4" />
+            {!collapsed && <span>Sign Out</span>}
+          </button>
         )}
       </div>
     </aside>

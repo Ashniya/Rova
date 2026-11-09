@@ -28,8 +28,8 @@ export const PassengerDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [buses, setBuses] = useState<BusData[]>([]);
-  const [selectedBus, setSelectedBus] = useState<BusData | null>(null);
+  const [buses, setBuses] = useState<BusData[]>(() => fleetService.getBuses());
+  const [selectedBus, setSelectedBus] = useState<BusData | null>(() => fleetService.getBuses()[0] || null);
   const [selectedSeatCodes, setSelectedSeatCodes] = useState<string[]>([]);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [confirmedPnr, setConfirmedPnr] = useState<string | null>(null);
