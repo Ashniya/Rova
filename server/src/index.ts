@@ -14,6 +14,8 @@ import tripRoutes from './routes/tripRoutes';
 import bookingRoutes from './routes/bookingRoutes';
 import operatorRoutes from './routes/operatorRoutes';
 import adminRoutes from './routes/adminRoutes';
+import prisma from './prisma';
+import { seedDatabase } from './services/seedService';
 
 dotenv.config();
 
@@ -99,9 +101,19 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
+  app.listen(PORT, async () => {
     console.log(`🚀 Rova Server is running at http://localhost:${PORT}`);
     console.log(`📑 OpenAPI / Swagger Docs available at http://localhost:${PORT}/api/docs`);
+    try {
+      const demoUser = await prisma.user.findUnique({ where: { email: 'gozal@example.com' } });
+      if (!demoUser) {
+        console.log('🌱 Demo accounts not detected. Auto-seeding database...');
+        await seedDatabase(prisma);
+        console.log('✅ Demo accounts seeded successfully.');
+      }
+    } catch (e) {
+      console.error('Auto-seed check error:', e);
+    }
   });
 }
 

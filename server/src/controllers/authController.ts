@@ -3,6 +3,17 @@ import bcrypt from 'bcryptjs';
 import prisma from '../prisma';
 import { generateToken } from '../middleware/auth';
 import { logAuditEvent } from '../services/auditService';
+import { seedDatabase } from '../services/seedService';
+
+export async function handleSeed(_req: Request, res: Response): Promise<void> {
+  try {
+    const result = await seedDatabase(prisma);
+    res.json(result);
+  } catch (error: any) {
+    console.error('Seed handler error:', error);
+    res.status(500).json({ success: false, message: error.message || 'Seeding failed' });
+  }
+}
 
 export async function register(req: Request, res: Response): Promise<void> {
   try {
