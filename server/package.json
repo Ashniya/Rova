@@ -26,6 +26,9 @@
     "yamljs": "^0.3.0",
     "zod": "^3.24.2"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
