@@ -4,15 +4,15 @@
   "private": true,
   "description": "Rova - Bus Booking Management System for ALGIONS AI LABS Assessment",
   "scripts": {
-    "install:all": "npm --prefix server install && npm --prefix client install",
-    "dev:server": "npm --prefix server run dev",
-    "dev:client": "npm --prefix client run dev",
-    "build:server": "npm --prefix server run build",
-    "build:client": "npm --prefix client run build",
-    "build": "npm --prefix server install && npm --prefix server run prisma:generate && npm --prefix server run build && npm --prefix client install && npm --prefix client run build",
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "build": "cd server && npm install && npx prisma generate && npx prisma db push --skip-generate && npm run build && cd ../client && npm install && npm run build",
     "start": "node server/dist/index.js",
-    "test": "npm --prefix server test",
-    "seed": "npm --prefix server run seed"
+    "test": "cd server && npm test",
+    "seed": "cd server && npm run seed"
   },
   "keywords": [
     "bus-booking",
