@@ -1,6 +1,6 @@
 import React from 'react';
 import { Seat } from '../types';
-import { Armchair, Check, Lock, Heart, SteeringWheel as Steering } from 'lucide-react';
+import { Armchair, Check, Lock, Heart } from 'lucide-react';
 
 interface SeatMapProps {
   seats: Seat[];

@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import ScrollReveal from '../components/ScrollReveal';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ export const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF9F7] text-[#1C1917] font-sans selection:bg-[#B91C1C] selection:text-white animate-fadeIn">
+    <div className="min-h-screen bg-[#FBF9F7] text-[#1C1917] font-sans selection:bg-[#B91C1C] selection:text-white animate-fadeIn overflow-x-hidden">
       {/* 1. TOP NAVBAR matching Image 3 */}
       <header className="bg-white/95 backdrop-blur-md border-b border-[#E7E2DA] sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -118,7 +119,7 @@ export const LandingPage: React.FC = () => {
               onClick={() => navigate('/login?role=driver')}
               className="hover:text-[#B91C1C] flex items-center gap-1 cursor-pointer transition-colors"
             >
-              <span>🚌 Driver HUD</span>
+              <span>🚌 Drivers Hub</span>
             </button>
             <button
               onClick={() => navigate('/login?role=admin')}
@@ -211,10 +212,10 @@ export const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Overlapping Luxury Coach Visual matching Image 3, 4, 5 */}
+            {/* Right Overlapping Luxury Coach Visual */}
             <div className="lg:col-span-6 relative">
               <div className="relative mx-auto max-w-lg">
-                {/* Main Coach Exterior Card matching Image 5 */}
+                {/* Main Coach Exterior Card */}
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-[#E7E2DA] h-80 group">
                   <img
                     src="/images/coach-exterior.jpg"
@@ -233,7 +234,7 @@ export const LandingPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Overlapping Interior Card matching Image 4 */}
+                {/* Overlapping Interior Card */}
                 <div className="absolute -bottom-10 -left-6 sm:-left-10 w-64 sm:w-72 rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-white">
                   <div className="relative h-44">
                     <img
@@ -265,8 +266,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. RED RIBBON BANNER matching Image 3 */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+      {/* 3. RED RIBBON BANNER with Scroll Reveal Animation */}
+      <ScrollReveal direction="up" delay={0.1} duration={0.8} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <div className="bg-[#B91C1C] text-white rounded-3xl p-6 sm:p-8 shadow-lg">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="space-y-1">
@@ -287,12 +288,12 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </ScrollReveal>
 
-      {/* 4. POPULAR OVERLAND ROUTES IN INDIA / PUNJAB matching Image 3 */}
+      {/* 4. POPULAR OVERLAND ROUTES IN INDIA / PUNJAB with Scroll Animation */}
       <section id="routes" className="py-14 bg-white border-t border-b border-[#E7E2DA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10">
+          <ScrollReveal direction="up" delay={0.1} className="flex flex-col sm:flex-row sm:items-end justify-between mb-10">
             <div>
               <span className="text-[11px] font-black uppercase tracking-widest text-[#B91C1C]">
                 TOP SCENIC OVERLAND ROUTES
@@ -312,12 +313,15 @@ export const LandingPage: React.FC = () => {
               <span>Explore All Fleets</span>
               <ChevronRight className="w-4 h-4 text-[#B91C1C]" />
             </button>
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {routes.map((r) => (
-              <div
+            {routes.map((r, index) => (
+              <ScrollReveal
                 key={r.id}
+                direction="up"
+                delay={0.15 + index * 0.12}
+                duration={0.8}
                 className="bg-[#FBF9F7] rounded-3xl p-4 border border-[#E7E2DA] shadow-xs hover:border-[#B91C1C]/40 transition-all flex flex-col justify-between group"
               >
                 <div>
@@ -352,15 +356,15 @@ export const LandingPage: React.FC = () => {
                   <span>Select Seat</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 5. WHY CHOOSE ROVA / ELEVATED GROUND LOGISTICS matching Image 3 */}
+      {/* 5. WHY CHOOSE ROVA / ELEVATED GROUND LOGISTICS with Scroll Animation */}
       <section id="logistics" className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <ScrollReveal direction="up" delay={0.1} duration={0.8} className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-6 space-y-5">
             <span className="text-[11px] font-black uppercase tracking-widest text-[#B91C1C]">
               WHY CHOOSE ROVA
@@ -398,13 +402,13 @@ export const LandingPage: React.FC = () => {
                 onClick={() => navigate('/login?role=driver')}
                 className="px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#44403C] font-bold rounded-full border border-[#E7E2DA] cursor-pointer"
               >
-                🚌 Driver Captain HUD
+                🚌 Drivers Hub
               </button>
               <button
                 onClick={() => navigate('/login?role=admin')}
                 className="px-4 py-2 bg-[#F3EFEA] hover:bg-[#EAE4DC] text-[#44403C] font-bold rounded-full border border-[#E7E2DA] cursor-pointer"
               >
-                🛡️ Fleet Dispatch HUD
+                🛡️ Fleet Admin Console
               </button>
             </div>
           </div>
@@ -424,13 +428,13 @@ export const LandingPage: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
-      {/* 6. EXPLORE CORRIDORS IN REAL-TIME (LIVE RADAR) matching Image 3 */}
+      {/* 6. EXPLORE CORRIDORS IN REAL-TIME (LIVE RADAR) with Scroll Animation */}
       <section id="telemetry" className="py-14 bg-white border-t border-b border-[#E7E2DA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <ScrollReveal direction="up" delay={0.1} duration={0.8} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Live Progress Box */}
             <div className="lg:col-span-7 bg-[#FBF9F7] rounded-3xl p-6 border border-[#E7E2DA] shadow-xs">
               <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#E7E2DA] text-xs font-bold text-[#78716C]">
@@ -492,18 +496,18 @@ export const LandingPage: React.FC = () => {
                   onClick={() => navigate('/login?role=driver')}
                   className="px-6 py-3.5 bg-[#B91C1C] hover:bg-[#991B1B] text-white font-black text-xs rounded-full shadow-xs transition-all flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Launch Radar HUD</span>
+                  <span>Launch Radar Hub</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* 7. PASSENGER TESTIMONIALS matching Image 3 */}
+      {/* 7. PASSENGER TESTIMONIALS with Scroll Animation */}
       <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-xl mx-auto mb-10">
+        <ScrollReveal direction="up" delay={0.1} className="text-center max-w-xl mx-auto mb-10">
           <span className="text-[11px] font-black uppercase tracking-widest text-[#B91C1C]">
             COMMUNITY REVIEWS
           </span>
@@ -513,10 +517,10 @@ export const LandingPage: React.FC = () => {
           <p className="text-xs text-[#78716C] mt-1">
             Real experiences from travelers across Punjab and Northern India.
           </p>
-        </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-3xl p-6 border border-[#E7E2DA] shadow-xs space-y-3">
+          <ScrollReveal direction="up" delay={0.15} duration={0.8} className="bg-white rounded-3xl p-6 border border-[#E7E2DA] shadow-xs space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-[#B91C1C] text-white font-bold text-xs flex items-center justify-center">
                 HS
@@ -529,9 +533,9 @@ export const LandingPage: React.FC = () => {
             <p className="text-xs text-[#44403C] italic leading-relaxed">
               "Traveling to Chandigarh with my family was effortless. Spotless luxury cabins, heated seats, and the double-decker observation seats made the journey memorable."
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="bg-[#B91C1C] text-white rounded-3xl p-6 shadow-sm space-y-3">
+          <ScrollReveal direction="up" delay={0.25} duration={0.8} className="bg-[#B91C1C] text-white rounded-3xl p-6 shadow-sm space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-white text-[#B91C1C] font-bold text-xs flex items-center justify-center">
                 SK
@@ -544,9 +548,9 @@ export const LandingPage: React.FC = () => {
             <p className="text-xs text-white/95 italic leading-relaxed">
               "The best bus service by far. Fast Wi-Fi, onboard charging ports for my laptop, and on-time departure from Sherpur Chowk. Using Rova will not disappoint."
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="bg-white rounded-3xl p-6 border border-[#E7E2DA] shadow-xs space-y-3">
+          <ScrollReveal direction="up" delay={0.35} duration={0.8} className="bg-white rounded-3xl p-6 border border-[#E7E2DA] shadow-xs space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-[#1C1917] text-white font-bold text-xs flex items-center justify-center">
                 RV
@@ -559,12 +563,12 @@ export const LandingPage: React.FC = () => {
             <p className="text-xs text-[#44403C] italic leading-relaxed">
               "Booking my seat through this interface was so smooth. Instant SMS PNR, zero duplicate seat nonsense, and the live driver telemetry map was accurate."
             </p>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* 8. VISION & FLEET BANNER matching Image 3 */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+      {/* 8. VISION & FLEET BANNER with Scroll Animation */}
+      <ScrollReveal direction="up" delay={0.1} duration={0.8} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <div className="bg-[#B91C1C] text-white rounded-3xl p-8 sm:p-12 shadow-md">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-4 flex justify-center">
@@ -599,15 +603,15 @@ export const LandingPage: React.FC = () => {
                   onClick={() => navigate('/login?role=driver')}
                   className="px-6 py-3 bg-[#991B1B] hover:bg-red-900 text-white font-bold text-xs rounded-full border border-white/20 transition-all cursor-pointer"
                 >
-                  Contact Dispatch
+                  Drivers Platform
                 </button>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </ScrollReveal>
 
-      {/* 9. DARK FOOTER matching Image 3 */}
+      {/* 9. DARK FOOTER with Scroll Animation */}
       <footer className="bg-[#1C1917] text-[#D6D3D1] py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-stone-800">
@@ -636,7 +640,7 @@ export const LandingPage: React.FC = () => {
             <div>
               <h4 className="text-xs font-black uppercase text-white tracking-wider mb-3">Fleet &amp; Crew</h4>
               <ul className="space-y-2 text-xs text-[#A8A29E]">
-                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/login?role=driver')}>Driver Cockpit HUD</li>
+                <li className="hover:text-white cursor-pointer" onClick={() => navigate('/login?role=driver')}>Drivers Hub &amp; Roster</li>
                 <li className="hover:text-white cursor-pointer" onClick={() => navigate('/login?role=admin')}>Fleet Logistics Console</li>
                 <li className="hover:text-white cursor-pointer" onClick={() => navigate('/login?role=driver')}>Live 37-Berth Schematic</li>
                 <li className="hover:text-white cursor-pointer" onClick={() => navigate('/login?role=admin')}>Platform Revenue Analytics</li>
@@ -651,7 +655,7 @@ export const LandingPage: React.FC = () => {
                 onClick={() => navigate('/login?role=driver')}
                 className="px-4 py-2 bg-[#B91C1C] hover:bg-[#991B1B] text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
               >
-                Access System HUD &rarr;
+                Access Drivers Hub &rarr;
               </button>
             </div>
           </div>

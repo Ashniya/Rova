@@ -323,7 +323,7 @@ export const DriverOwnerDashboard: React.FC = () => {
                         <span className="text-xs font-bold text-stone-500">Boarding Check-In:</span>
                         <button
                           type="button"
-                          onClick={() => handleToggleCheckIn(p.seat)}
+                          onClick={() => handleToggleCheckIn(p.seat || p.seatCode || '')}
                           className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
                         >
                           ✓ Confirm Passenger On-Board

@@ -13,6 +13,17 @@ import {
   LogOut,
   User,
   ShieldCheck,
+  QrCode,
+  Compass,
+  Clock,
+  Tag,
+  Headphones,
+  Navigation,
+  Fuel,
+  PhoneCall,
+  TrendingUp,
+  DollarSign,
+  FileText,
 } from 'lucide-react';
 import { useSidebar } from '../context/SidebarContext';
 import { useAuth } from '../context/AuthContext';
@@ -29,50 +40,157 @@ export const Sidebar: React.FC = () => {
 
   let portalTitle = 'TRANSIT CONTROL';
   let portalRoleTag = 'OPERATIONS';
-  let navItems: { label: string; path: string; icon: any }[] = [];
+  let navItems: { label: string; path: string; icon: any; action?: () => void }[] = [];
 
   if (isDriver) {
-    portalTitle = 'DRIVER HUD';
-    portalRoleTag = 'DRIVER COCKPIT';
+    portalTitle = 'DRIVERS HUB';
+    portalRoleTag = 'DRIVERS PLATFORM';
     navItems = [
-      { label: 'Landing Page', path: '/landing', icon: Globe },
-      { label: 'My Bus & Live Seats', path: '/driver', icon: Bus },
+      { label: 'My Bus & 37-Seat Schematic', path: '/driver', icon: Bus },
+      {
+        label: 'Passenger Manifest Checklist',
+        path: '/driver#manifest',
+        icon: Users,
+        action: () => {
+          const el = document.getElementById('manifest');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        },
+      },
+      {
+        label: 'Corridor Waypoints & Stops',
+        path: '/driver#waypoints',
+        icon: Navigation,
+        action: () => {
+          alert('Grand Trunk Corridor: Amritsar ISBT ➔ Jalandhar Rama Mandi ➔ Ludhiana Sherpur ➔ Chandigarh Sector 17.');
+        },
+      },
+      {
+        label: 'Fuel & Engine Diagnostics',
+        path: '/driver#telemetry',
+        icon: Fuel,
+        action: () => {
+          alert('Coach Telemetry: Diesel Level 82%, Coolant Temp 88°C, Tire Pressure 110 PSI (Nominal).');
+        },
+      },
+      {
+        label: 'Terminal Bay Clearance',
+        path: '/driver#clearance',
+        icon: Clock,
+        action: () => {
+          alert('Gate Clearance: Bay 04 scheduled departure on-time. Clearance confirmed with ISBT dispatch.');
+        },
+      },
+      {
+        label: 'Roadside Assistance',
+        path: '/driver#emergency',
+        icon: PhoneCall,
+        action: () => {
+          alert('Emergency Roadside Helpline: +91 1800-ROVA-DISPATCH (24x7 Highway Patrol).');
+        },
+      },
+      { label: 'Return to Landing', path: '/', icon: Globe },
     ];
   } else if (isPassenger) {
     portalTitle = 'PASSENGER PORTAL';
     portalRoleTag = 'PASSENGER ACCESS';
     navItems = [
-      { label: 'Landing Page', path: '/landing', icon: Globe },
       { label: 'Browse & Book Buses', path: '/passenger', icon: Ticket },
+      {
+        label: 'My Digital Tickets & QR',
+        path: '/passenger#tickets',
+        icon: QrCode,
+        action: () => {
+          const el = document.getElementById('confirmed-tickets');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+          else alert('Use the booking screen to view your active ticket and download digital QR pass.');
+        },
+      },
+      {
+        label: 'Saved Corridors & Routes',
+        path: '/passenger#favorites',
+        icon: Compass,
+        action: () => {
+          alert('Saved Corridors: Amritsar ──▶ Chandigarh (Daily), Delhi ──▶ Amritsar (Overnight Express).');
+        },
+      },
+      {
+        label: 'Live Boarding Pass & ETA',
+        path: '/passenger#boarding',
+        icon: Clock,
+        action: () => {
+          alert('Boarding Pass Ready: Amritsar ISBT Gate 03. ETA: 42 mins.');
+        },
+      },
+      {
+        label: 'Luggage Tags & Policy',
+        path: '/passenger#luggage',
+        icon: Tag,
+        action: () => {
+          alert('Luggage Policy: 2 Check-in bags (up to 20kg each) + 1 Cabin handbag permitted per traveler.');
+        },
+      },
+      {
+        label: 'Station Support Helpdesk',
+        path: '/passenger#support',
+        icon: Headphones,
+        action: () => {
+          alert('Station Helpdesk: +91 1800-ROVA-BUS (Toll-Free, 24x7 Support).');
+        },
+      },
+      { label: 'Return to Landing', path: '/', icon: Globe },
     ];
   } else {
     portalTitle = 'PLATFORM ADMIN';
     portalRoleTag = 'ADMIN CONSOLE';
     navItems = [
-      { label: 'Landing Page', path: '/landing', icon: Globe },
-      { label: 'Income & Tickets', path: '/admin', icon: Radio },
-      { label: 'Bus Fleet & Drivers', path: '/fleet', icon: Bus },
-      { label: 'Schedules', path: '/schedule', icon: Calendar },
-      { label: 'Passenger Manifests', path: '/customers', icon: Users },
-      { label: 'Analytics & Reports', path: '/analytics', icon: BarChart3 },
+      { label: 'Revenue & Income Overview', path: '/admin', icon: BarChart3 },
+      { label: 'Bus Fleet & Live Coaches', path: '/fleet', icon: Bus },
+      { label: 'Schedules & Frequencies', path: '/schedule', icon: Calendar },
+      { label: 'Passenger Manifest Directory', path: '/customers', icon: Users },
+      { label: 'Corridor Analytics & Reports', path: '/analytics', icon: TrendingUp },
+      {
+        label: 'Driver Roster & Licenses',
+        path: '/admin#roster',
+        icon: ShieldCheck,
+        action: () => {
+          alert('Active Driver Roster: 24 Captains on active duty, all commercial licenses verified for Punjab routes.');
+        },
+      },
+      {
+        label: 'Dynamic Fare Engine',
+        path: '/admin#fares',
+        icon: DollarSign,
+        action: () => {
+          alert('Fare Engine: Dynamic pricing active. 10% platform commission on confirmed reservations.');
+        },
+      },
+      {
+        label: 'System Audit Logs',
+        path: '/admin#audit',
+        icon: FileText,
+        action: () => {
+          alert('Audit Logs: Zero concurrent booking conflicts detected. Data reconciliation 100% verified.');
+        },
+      },
+      { label: 'Return to Landing', path: '/', icon: Globe },
     ];
   }
 
   const isActive = (path: string) => {
-    if (path === '/landing' && location.pathname === '/landing') return true;
-    if (path !== '/landing' && location.pathname.startsWith(path)) return true;
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
   };
 
   return (
     <aside
-      className={`bg-[#1C1917] min-h-screen text-stone-300 flex flex-col justify-between shrink-0 border-r border-[#2E2A27] select-none transition-all duration-300 ease-in-out relative z-30 ${
+      className={`bg-[#1C1917] h-screen text-stone-300 flex flex-col justify-between shrink-0 border-r border-[#2E2A27] select-none transition-all duration-300 ease-in-out relative z-30 sticky top-0 ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
-      <div>
+      <div className="flex flex-col flex-1 min-h-0">
         {/* Brand Header */}
-        <div className={`border-b border-[#2E2A27] transition-all duration-300 ${collapsed ? 'p-3 flex flex-col items-center' : 'p-6'}`}>
+        <div className={`border-b border-[#2E2A27] transition-all duration-300 shrink-0 ${collapsed ? 'p-3 flex flex-col items-center' : 'p-5'}`}>
           {collapsed ? (
             /* Minimized state: Rova title at top */
             <div className="flex flex-col items-center gap-2 w-full pt-1">
@@ -135,27 +253,46 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Section Label */}
-        <div className={`pt-4 pb-2 ${collapsed ? 'text-center' : 'px-6'}`}>
+        <div className={`pt-3 pb-1 shrink-0 ${collapsed ? 'text-center' : 'px-5'}`}>
           <span className="text-[9px] font-bold tracking-widest text-stone-500 uppercase">
             {collapsed ? 'NAV' : portalRoleTag}
           </span>
         </div>
 
-        {/* Navigation Links strictly isolated for this role */}
-        <nav className="px-2.5 space-y-1">
+        {/* Navigation Links - Scrollable internally if screen is small, but sidebar never scrolls page */}
+        <nav className="flex-1 overflow-y-auto px-2.5 py-1 space-y-1 scrollbar-thin scrollbar-thumb-stone-800">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
+
+            if (item.action) {
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={item.action}
+                  title={collapsed ? item.label : undefined}
+                  className={`w-full flex items-center rounded-xl text-xs font-bold transition-all duration-200 text-left cursor-pointer ${
+                    collapsed
+                      ? 'justify-center p-2.5'
+                      : 'gap-3 px-3.5 py-2.5'
+                  } text-stone-400 hover:text-white hover:bg-stone-800/80`}
+                >
+                  <Icon className="w-4 h-4 shrink-0 text-stone-400 group-hover:text-white" />
+                  {!collapsed && <span className="truncate">{item.label}</span>}
+                </button>
+              );
+            }
 
             return (
               <Link
                 key={item.label}
                 to={item.path}
                 title={collapsed ? item.label : undefined}
-                className={`flex items-center rounded-2xl text-xs font-bold transition-all duration-200 ${
+                className={`flex items-center rounded-xl text-xs font-bold transition-all duration-200 ${
                   collapsed
-                    ? 'justify-center p-3'
-                    : 'gap-3.5 px-4 py-3'
+                    ? 'justify-center p-2.5'
+                    : 'gap-3 px-3.5 py-2.5'
                 } ${
                   active
                     ? 'bg-[#B91C1C] text-white shadow-xs'
@@ -170,8 +307,8 @@ export const Sidebar: React.FC = () => {
         </nav>
       </div>
 
-      {/* Footer Area with User Profile & Logout */}
-      <div className="p-3 border-t border-stone-800 space-y-2">
+      {/* Footer Area with User Profile & Logout - Always Pinned at Bottom */}
+      <div className="p-3 border-t border-stone-800 space-y-2 shrink-0 bg-[#1C1917]">
         {!collapsed && user && (
           <div className="px-3 py-2 bg-stone-900 rounded-xl border border-stone-800 flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-[#B91C1C] text-white flex items-center justify-center text-xs font-black">
@@ -190,11 +327,11 @@ export const Sidebar: React.FC = () => {
           <button
             onClick={() => {
               logout();
-              window.location.href = '/landing';
+              window.location.href = '/';
             }}
             title="Log out of system"
             className={`w-full flex items-center rounded-xl text-xs font-bold text-stone-400 hover:text-red-400 hover:bg-stone-900 transition-colors cursor-pointer ${
-              collapsed ? 'justify-center p-2.5' : 'gap-2 px-3 py-2'
+              collapsed ? 'justify-center p-2' : 'gap-2 px-3 py-2'
             }`}
           >
             <LogOut className="w-4 h-4" />

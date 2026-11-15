@@ -159,7 +159,7 @@ export const LoginPage: React.FC = () => {
                 }`}
               >
                 <span>🚌</span>
-                <span>Driver HUD</span>
+                <span>Drivers Hub</span>
               </button>
 
               <button
@@ -276,7 +276,7 @@ export const LoginPage: React.FC = () => {
                     : role === 'PASSENGER'
                     ? 'Access Booking & Digital QR ➔'
                     : role === 'DRIVER'
-                    ? 'Enter Driver Cockpit HUD ➔'
+                    ? 'Enter Drivers Hub ➔'
                     : 'Access Platform Admin Console ➔'}
                 </span>
               </button>

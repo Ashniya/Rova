@@ -30,14 +30,15 @@ const queryClient = new QueryClient({
 });
 
 // Operations Layout with Collapsible Sidebar and Design System
+// Sidebar is fixed in view (h-screen) and does NOT scroll down with page content
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="flex min-h-screen bg-[#FBF9F7] dark:bg-[#120E0C] text-[#1C1917] dark:text-stone-100 font-sans selection:bg-[#B91C1C] selection:text-white transition-colors duration-200">
-      {/* Dark Stone Sidebar (Expandable / Minimizable) */}
+    <div className="flex h-screen w-full overflow-hidden bg-[#FBF9F7] dark:bg-[#120E0C] text-[#1C1917] dark:text-stone-100 font-sans selection:bg-[#B91C1C] selection:text-white transition-colors duration-200">
+      {/* Dark Stone Sidebar (Expandable / Minimizable) - Pinned in viewport */}
       <Sidebar />
 
-      {/* Main Application Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      {/* Main Application Area - only this container scrolls */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden">
         {/* Top Bar with Search, Dark Mode Toggle, Notifications & Profile */}
         <TopBar />
 

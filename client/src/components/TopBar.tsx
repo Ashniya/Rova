@@ -13,6 +13,11 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+
+interface TopBarProps {
+  onSearch?: (term: string) => void;
+}
+
 export const TopBar: React.FC<TopBarProps> = ({ onSearch }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();

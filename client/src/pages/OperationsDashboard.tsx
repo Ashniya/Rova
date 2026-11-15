@@ -15,7 +15,7 @@ import {
   Navigation,
   Fuel,
   Thermometer,
-  Speedometer,
+  Gauge,
   Clock,
   ArrowUpRight,
   Download,

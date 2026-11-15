@@ -2,13 +2,21 @@ import React from 'react';
 import { Armchair, Check, Lock, User } from 'lucide-react';
 
 export interface PassengerInfo {
-  seat: string;
-  name: string;
+  seat?: string;
+  seatCode?: string;
+  name?: string;
+  passengerName?: string;
   phone?: string;
+  passengerPhone?: string;
+  passengerEmail?: string;
   boarding?: string;
+  boardingPoint?: string;
   dropping?: string;
+  droppingPoint?: string;
   pnr?: string;
   fare?: number;
+  status?: string;
+  [key: string]: any;
 }
 
 interface BusSeatChassisProps {
@@ -16,9 +24,9 @@ interface BusSeatChassisProps {
   selectedSeatCodes?: string[];
   onToggleSeat?: (seatCode: string) => void;
   interactive?: boolean;
-  passengerMap?: Record<string, PassengerInfo>;
-  onHoverSeat?: (info: PassengerInfo | null) => void;
-  onClickSeat?: (info: PassengerInfo | null) => void;
+  passengerMap?: Record<string, any>;
+  onHoverSeat?: (info: any) => void;
+  onClickSeat?: (info: any) => void;
   hoveredSeatCode?: string | null;
 }
 
