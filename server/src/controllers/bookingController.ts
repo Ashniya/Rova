@@ -282,13 +282,15 @@ export async function cancelBooking(req: Request, res: Response): Promise<void> 
     const now = new Date();
     const hoursUntilDeparture = (departureTime.getTime() - now.getTime()) / (1000 * 3600);
 
-    let refundPercentage = 0;
+    let refundPercentage = 50;
     if (hoursUntilDeparture > 24) {
       refundPercentage = 90;
     } else if (hoursUntilDeparture >= 12) {
+      refundPercentage = 75;
+    } else if (hoursUntilDeparture >= 2) {
       refundPercentage = 50;
     } else {
-      refundPercentage = 0;
+      refundPercentage = 40; // Base refund tier for same-day or demo testing
     }
 
     const refundAmount = Math.round(((booking.totalAmount * refundPercentage) / 100) * 100) / 100;

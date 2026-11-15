@@ -28,6 +28,7 @@ interface BusSeatChassisProps {
   onHoverSeat?: (info: any) => void;
   onClickSeat?: (info: any) => void;
   hoveredSeatCode?: string | null;
+  basePrice?: number;
 }
 
 export const BusSeatChassis: React.FC<BusSeatChassisProps> = ({
@@ -39,6 +40,7 @@ export const BusSeatChassis: React.FC<BusSeatChassisProps> = ({
   onHoverSeat,
   onClickSeat,
   hoveredSeatCode,
+  basePrice,
 }) => {
   // Front VIP Rows (2 on left, 1 on right: Orange, Green, Yellow)
   const vipRows = [
@@ -63,6 +65,14 @@ export const BusSeatChassis: React.FC<BusSeatChassisProps> = ({
     const isSelected = selectedSeatCodes.includes(code);
     const isHovered = hoveredSeatCode === code;
     const passenger = passengerMap[code];
+    const isRear = ['S21', 'S22', 'S23', 'S24', 'S25', 'S26', 'S27', 'S28'].includes(code);
+    const seatPrice = basePrice
+      ? isVip
+        ? basePrice + 250
+        : isRear
+        ? Math.max(100, basePrice - 100)
+        : basePrice
+      : null;
 
     return (
       <button
@@ -93,8 +103,8 @@ export const BusSeatChassis: React.FC<BusSeatChassisProps> = ({
         } ${isHovered ? 'ring-2 ring-white scale-110 z-20' : ''}`}
         title={
           isBooked
-            ? `Seat ${code} - Booked by ${passenger?.name || 'Passenger'}`
-            : `Seat ${code} - Available (${isVip ? 'VIP Tier' : 'Executive Tier'})`
+            ? `Seat ${code} - Booked by ${passenger?.name || passenger?.passengerName || 'Passenger'}`
+            : `Seat ${code} - Available (${isVip ? `VIP Recliner • ₹${seatPrice}` : isRear ? `Rear Saver (-₹100) • ₹${seatPrice}` : `Standard • ₹${seatPrice}`})`
         }
       >
         {isSelected ? (
@@ -105,6 +115,11 @@ export const BusSeatChassis: React.FC<BusSeatChassisProps> = ({
           <div className="w-3.5 h-3.5 rounded-sm border-2 border-white/60 mb-0.5"></div>
         )}
         <span className="leading-none text-[9px] font-mono mt-0.5">{code}</span>
+        {seatPrice && !isBooked && (
+          <span className="text-[7px] font-mono opacity-85 leading-none mt-0.5 font-bold">
+            ₹{seatPrice}
+          </span>
+        )}
       </button>
     );
   };

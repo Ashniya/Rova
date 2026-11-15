@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   DollarSign,
   TrendingUp,
@@ -24,12 +25,16 @@ import {
   UserCheck,
   User,
   Phone,
+  FileText,
+  Sliders,
 } from 'lucide-react';
 import { fleetService, BusData, BookedSeatRecord } from '../services/fleetService';
 import BusSeatChassis from '../components/BusSeatChassis';
 
 export const AdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'fleet' | 'radar' | 'audit'>('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const paramTab = searchParams.get('tab');
+  const activeTab = (paramTab as any) || 'overview';
   const [buses, setBuses] = useState<BusData[]>(() => fleetService.getBuses());
   const [selectedCoachId, setSelectedCoachId] = useState<string>(() => fleetService.getBuses()[0]?.id || 'bus-1');
   const [addBusModalOpen, setAddBusModalOpen] = useState(false);
@@ -155,7 +160,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="flex items-center gap-1 bg-[#F3EFEA] dark:bg-stone-800 p-1.5 rounded-2xl">
             <button
               type="button"
-              onClick={() => setActiveTab('overview')}
+              onClick={() => setSearchParams({ tab: 'overview' })}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'overview'
                   ? 'bg-white dark:bg-stone-900 text-[#B91C1C] dark:text-[#F87171] shadow-xs'
@@ -166,7 +171,7 @@ export const AdminDashboard: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('fleet')}
+              onClick={() => setSearchParams({ tab: 'fleet' })}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'fleet'
                   ? 'bg-white dark:bg-stone-900 text-[#B91C1C] dark:text-[#F87171] shadow-xs'
@@ -177,7 +182,7 @@ export const AdminDashboard: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('radar')}
+              onClick={() => setSearchParams({ tab: 'radar' })}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'radar'
                   ? 'bg-white dark:bg-stone-900 text-[#B91C1C] dark:text-[#F87171] shadow-xs'
@@ -472,6 +477,135 @@ export const AdminDashboard: React.FC = () => {
                   <span>Driver: <strong>{b.driverName}</strong></span>
                   <span className="text-emerald-400 font-bold">ETA: {b.arrivalTime}</span>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: DRIVER ROSTER & COMPLIANCE */}
+      {activeTab === 'roster' && (
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 sm:p-8 border border-[#E7E2DA] dark:border-stone-800 shadow-xs space-y-6 animate-fadeIn">
+          <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
+            <div>
+              <h3 className="text-xl font-black text-[#1C1917] dark:text-white">
+                Commercial Driver Roster &amp; License Compliance
+              </h3>
+              <p className="text-xs text-stone-500">
+                Authorized commercial drivers holding valid Punjab State Transport Department licenses.
+              </p>
+            </div>
+            <span className="px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-xs font-bold">
+              All 6 Captains Verified
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {registeredDrivers.map((drv, idx) => (
+              <div
+                key={drv.name}
+                className="p-5 rounded-2xl border border-stone-200 dark:border-stone-800 bg-[#FBF9F7] dark:bg-stone-800/60 space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="w-10 h-10 rounded-xl bg-[#B91C1C] text-white flex items-center justify-center font-black">
+                    {drv.name.charAt(0)}
+                  </div>
+                  <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                    Active On Duty
+                  </span>
+                </div>
+                <div>
+                  <h4 className="font-black text-sm text-stone-900 dark:text-white">{drv.name}</h4>
+                  <p className="text-xs text-stone-500 font-mono mt-0.5">{drv.phone}</p>
+                </div>
+                <div className="pt-2 border-t border-stone-200 dark:border-stone-700 text-xs text-stone-600 dark:text-stone-300 space-y-1">
+                  <div>Commercial License: <strong className="font-mono">PB-02-201800{idx + 1}49</strong></div>
+                  <div>Assigned: <strong>{buses[idx]?.name || 'Standby Reserve'}</strong></div>
+                  <div>Safety Rating: <strong className="text-amber-600">4.9 / 5.0 ⭐</strong></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: DYNAMIC FARE ENGINE */}
+      {activeTab === 'fares' && (
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 sm:p-8 border border-[#E7E2DA] dark:border-stone-800 shadow-xs space-y-6 animate-fadeIn">
+          <div className="pb-3 border-b border-stone-100 dark:border-stone-800">
+            <h3 className="text-xl font-black text-[#1C1917] dark:text-white">
+              Dynamic Fare &amp; Platform Revenue Engine
+            </h3>
+            <p className="text-xs text-stone-500">
+              Configure base seat fare rates, VIP tier surge pricing, off-peak saver discounts, and platform commissions.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 space-y-3">
+              <span className="text-[10px] font-black uppercase text-amber-800 dark:text-amber-300">Front VIP Rows Surcharge</span>
+              <p className="text-3xl font-black text-[#B91C1C]">+₹250</p>
+              <p className="text-xs text-stone-500">
+                Applied to panoramic front seats (V1 to V9) featuring 140° tilt leather recliners.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 space-y-3">
+              <span className="text-[10px] font-black uppercase text-blue-800 dark:text-blue-300">Rear Economy Saver Discount</span>
+              <p className="text-3xl font-black text-emerald-600">-₹100</p>
+              <p className="text-xs text-stone-500">
+                Applied to rear seats (S21 to S28) to maximize seat load factor and budget accessibility.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 space-y-3">
+              <span className="text-[10px] font-black uppercase text-emerald-800 dark:text-emerald-300">Platform Booking Commission</span>
+              <p className="text-3xl font-black text-emerald-700">10.0%</p>
+              <p className="text-xs text-stone-500">
+                Platform fee retained on confirmed ticket purchases, covering payment gateway &amp; GPS cloud telemetry.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 6: SYSTEM AUDIT LOGS */}
+      {activeTab === 'audit' && (
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 sm:p-8 border border-[#E7E2DA] dark:border-stone-800 shadow-xs space-y-4 animate-fadeIn">
+          <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
+            <div>
+              <h3 className="text-xl font-black text-[#1C1917] dark:text-white">
+                Immutable System &amp; Booking Audit Logs
+              </h3>
+              <p className="text-xs text-stone-500">
+                Real-time security ledger of seat locks, payment reconciliations, and terminal dispatches.
+              </p>
+            </div>
+            <span className="text-xs font-mono text-emerald-600 font-bold">
+              0 Conflicts Detected
+            </span>
+          </div>
+
+          <div className="space-y-3 font-mono text-xs">
+            {[
+              { time: '11:15:42 AM', event: 'SEAT_LOCK_VERIFIED', desc: 'Seats locked and marked SOLD across client sockets.', level: 'SUCCESS' },
+              { time: '11:08:19 AM', event: 'PAYMENT_SETTLEMENT', desc: 'UPI settlement reference reconciled with Punjab National Bank.', level: 'INFO' },
+              { time: '10:52:04 AM', event: 'TELEMETRY_SYNC', desc: 'OSRM distance calculation Jalandhar-Ludhiana GT Road synchronized.', level: 'INFO' },
+              { time: '10:30:00 AM', event: 'BAY_CLEARANCE_GREEN', desc: 'Coach PB-02-AK-9921 cleared Amritsar ISBT Bay 04 on-time.', level: 'SUCCESS' },
+              { time: '09:45:12 AM', event: 'DRIVER_DISPATCH_CONFIRMED', desc: 'Captain Gurpreet Singh authenticated on terminal console.', level: 'INFO' },
+            ].map((log, idx) => (
+              <div
+                key={idx}
+                className="p-3.5 bg-stone-50 dark:bg-stone-800/70 rounded-xl border border-stone-200 dark:border-stone-700 flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-stone-400">{log.time}</span>
+                  <span className="font-bold text-[#B91C1C]">{log.event}</span>
+                  <span className="text-stone-600 dark:text-stone-300 font-sans text-[11px]">{log.desc}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                  {log.level}
+                </span>
               </div>
             ))}
           </div>

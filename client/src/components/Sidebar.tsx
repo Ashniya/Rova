@@ -40,145 +40,61 @@ export const Sidebar: React.FC = () => {
 
   let portalTitle = 'TRANSIT CONTROL';
   let portalRoleTag = 'OPERATIONS';
-  let navItems: { label: string; path: string; icon: any; action?: () => void }[] = [];
+  let navItems: { label: string; path: string; icon: any }[] = [];
 
   if (isDriver) {
     portalTitle = 'DRIVERS HUB';
     portalRoleTag = 'DRIVERS PLATFORM';
     navItems = [
-      { label: 'My Bus & 37-Seat Schematic', path: '/driver', icon: Bus },
-      {
-        label: 'Passenger Manifest Checklist',
-        path: '/driver#manifest',
-        icon: Users,
-        action: () => {
-          const el = document.getElementById('manifest');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        },
-      },
-      {
-        label: 'Corridor Waypoints & Stops',
-        path: '/driver#waypoints',
-        icon: Navigation,
-        action: () => {
-          alert('Grand Trunk Corridor: Amritsar ISBT ➔ Jalandhar Rama Mandi ➔ Ludhiana Sherpur ➔ Chandigarh Sector 17.');
-        },
-      },
-      {
-        label: 'Fuel & Engine Diagnostics',
-        path: '/driver#telemetry',
-        icon: Fuel,
-        action: () => {
-          alert('Coach Telemetry: Diesel Level 82%, Coolant Temp 88°C, Tire Pressure 110 PSI (Nominal).');
-        },
-      },
-      {
-        label: 'Terminal Bay Clearance',
-        path: '/driver#clearance',
-        icon: Clock,
-        action: () => {
-          alert('Gate Clearance: Bay 04 scheduled departure on-time. Clearance confirmed with ISBT dispatch.');
-        },
-      },
-      {
-        label: 'Roadside Assistance',
-        path: '/driver#emergency',
-        icon: PhoneCall,
-        action: () => {
-          alert('Emergency Roadside Helpline: +91 1800-ROVA-DISPATCH (24x7 Highway Patrol).');
-        },
-      },
+      { label: 'My Bus & 37-Seat Cabin', path: '/driver?tab=seats', icon: Bus },
+      { label: 'Passenger Manifest Checklist', path: '/driver?tab=manifest', icon: Users },
+      { label: 'Corridor Waypoints & Stops', path: '/driver?tab=waypoints', icon: Navigation },
+      { label: 'Coach Telemetry & Fuel Gauges', path: '/driver?tab=telemetry', icon: Fuel },
+      { label: 'ISBT Bay Departure Clearance', path: '/driver?tab=clearance', icon: Clock },
+      { label: 'Highway Emergency & Roadside SOS', path: '/driver?tab=emergency', icon: PhoneCall },
       { label: 'Return to Landing', path: '/', icon: Globe },
     ];
   } else if (isPassenger) {
     portalTitle = 'PASSENGER PORTAL';
     portalRoleTag = 'PASSENGER ACCESS';
     navItems = [
-      { label: 'Browse & Book Buses', path: '/passenger', icon: Ticket },
-      {
-        label: 'My Digital Tickets & QR',
-        path: '/passenger#tickets',
-        icon: QrCode,
-        action: () => {
-          const el = document.getElementById('confirmed-tickets');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-          else alert('Use the booking screen to view your active ticket and download digital QR pass.');
-        },
-      },
-      {
-        label: 'Saved Corridors & Routes',
-        path: '/passenger#favorites',
-        icon: Compass,
-        action: () => {
-          alert('Saved Corridors: Amritsar ──▶ Chandigarh (Daily), Delhi ──▶ Amritsar (Overnight Express).');
-        },
-      },
-      {
-        label: 'Live Boarding Pass & ETA',
-        path: '/passenger#boarding',
-        icon: Clock,
-        action: () => {
-          alert('Boarding Pass Ready: Amritsar ISBT Gate 03. ETA: 42 mins.');
-        },
-      },
-      {
-        label: 'Luggage Tags & Policy',
-        path: '/passenger#luggage',
-        icon: Tag,
-        action: () => {
-          alert('Luggage Policy: 2 Check-in bags (up to 20kg each) + 1 Cabin handbag permitted per traveler.');
-        },
-      },
-      {
-        label: 'Station Support Helpdesk',
-        path: '/passenger#support',
-        icon: Headphones,
-        action: () => {
-          alert('Station Helpdesk: +91 1800-ROVA-BUS (Toll-Free, 24x7 Support).');
-        },
-      },
+      { label: 'Browse & Book Coaches', path: '/passenger?tab=coaches', icon: Ticket },
+      { label: 'My Digital Tickets & QR', path: '/passenger?tab=tickets', icon: QrCode },
+      { label: 'Live Highway Telemetry (OSRM)', path: '/passenger?tab=tracking', icon: Radio },
+      { label: 'Punjab Transit Timetable', path: '/passenger?tab=timetable', icon: Clock },
+      { label: 'Fare & Seat Tier Calculator', path: '/passenger?tab=calculator', icon: DollarSign },
+      { label: 'Baggage & Travel Guidelines', path: '/passenger?tab=guidelines', icon: Tag },
+      { label: '24/7 Transit Helpdesk', path: '/passenger?tab=support', icon: Headphones },
       { label: 'Return to Landing', path: '/', icon: Globe },
     ];
   } else {
     portalTitle = 'PLATFORM ADMIN';
     portalRoleTag = 'ADMIN CONSOLE';
     navItems = [
-      { label: 'Revenue & Income Overview', path: '/admin', icon: BarChart3 },
+      { label: 'Revenue & Financial Ledger', path: '/admin?tab=overview', icon: BarChart3 },
       { label: 'Bus Fleet & Live Coaches', path: '/fleet', icon: Bus },
-      { label: 'Schedules & Frequencies', path: '/schedule', icon: Calendar },
-      { label: 'Passenger Manifest Directory', path: '/customers', icon: Users },
+      { label: 'Schedules & Trip Frequencies', path: '/schedule', icon: Calendar },
+      { label: 'Passenger Directory & Accounts', path: '/customers', icon: Users },
+      { label: 'Seat Bookings & Manifests', path: '/bookings', icon: Ticket },
       { label: 'Corridor Analytics & Reports', path: '/analytics', icon: TrendingUp },
-      {
-        label: 'Driver Roster & Licenses',
-        path: '/admin#roster',
-        icon: ShieldCheck,
-        action: () => {
-          alert('Active Driver Roster: 24 Captains on active duty, all commercial licenses verified for Punjab routes.');
-        },
-      },
-      {
-        label: 'Dynamic Fare Engine',
-        path: '/admin#fares',
-        icon: DollarSign,
-        action: () => {
-          alert('Fare Engine: Dynamic pricing active. 10% platform commission on confirmed reservations.');
-        },
-      },
-      {
-        label: 'System Audit Logs',
-        path: '/admin#audit',
-        icon: FileText,
-        action: () => {
-          alert('Audit Logs: Zero concurrent booking conflicts detected. Data reconciliation 100% verified.');
-        },
-      },
+      { label: 'Driver Roster & Compliance', path: '/admin?tab=roster', icon: ShieldCheck },
+      { label: 'Dynamic Fare Engine', path: '/admin?tab=fares', icon: DollarSign },
+      { label: 'System Security Audit Logs', path: '/admin?tab=audit', icon: FileText },
       { label: 'Return to Landing', path: '/', icon: Globe },
     ];
   }
 
   const isActive = (path: string) => {
+    const current = location.pathname + (location.search || '');
     if (path === '/' && location.pathname === '/') return true;
-    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    if (path === current) return true;
+    // Default fallback when no search query parameter is present
+    if (path.includes('?tab=') && !location.search) {
+      if (isPassenger && path.endsWith('?tab=coaches')) return true;
+      if (isDriver && path.endsWith('?tab=seats')) return true;
+      if (isAdmin && path.endsWith('?tab=overview')) return true;
+    }
+    if (!path.includes('?') && location.pathname === path && !location.search) return true;
     return false;
   };
 
@@ -264,25 +180,6 @@ export const Sidebar: React.FC = () => {
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
-
-            if (item.action) {
-              return (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={item.action}
-                  title={collapsed ? item.label : undefined}
-                  className={`w-full flex items-center rounded-xl text-xs font-bold transition-all duration-200 text-left cursor-pointer ${
-                    collapsed
-                      ? 'justify-center p-2.5'
-                      : 'gap-3 px-3.5 py-2.5'
-                  } text-stone-400 hover:text-white hover:bg-stone-800/80`}
-                >
-                  <Icon className="w-4 h-4 shrink-0 text-stone-400 group-hover:text-white" />
-                  {!collapsed && <span className="truncate">{item.label}</span>}
-                </button>
-              );
-            }
 
             return (
               <Link

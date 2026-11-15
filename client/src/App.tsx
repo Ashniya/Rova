@@ -38,7 +38,7 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
       <Sidebar />
 
       {/* Main Application Area - only this container scrolls */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden">
+      <div id="main-app-scroll" className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden">
         {/* Top Bar with Search, Dark Mode Toggle, Notifications & Profile */}
         <TopBar />
 

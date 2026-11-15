@@ -290,6 +290,36 @@ export const fleetService = {
     return map;
   },
 
+  getSeatPrice(bus: BusData, seatCode: string): { price: number; type: 'VIP' | 'STANDARD' | 'BACK'; label: string; badge: string } {
+    if (seatCode.startsWith('V')) {
+      return {
+        price: bus.basePrice + 250,
+        type: 'VIP',
+        label: 'VIP Panorama Recliner',
+        badge: '+₹250 VIP Upgrade',
+      };
+    }
+    const rearSeats = ['S21', 'S22', 'S23', 'S24', 'S25', 'S26', 'S27', 'S28'];
+    if (rearSeats.includes(seatCode)) {
+      return {
+        price: Math.max(100, bus.basePrice - 100),
+        type: 'BACK',
+        label: 'Rear Economy Saver',
+        badge: '-₹100 Economy Discount',
+      };
+    }
+    return {
+      price: bus.basePrice,
+      type: 'STANDARD',
+      label: 'Executive Standard',
+      badge: 'Standard Fare',
+    };
+  },
+
+  calculateTotalPrice(bus: BusData, seatCodes: string[]): number {
+    return seatCodes.reduce((sum, code) => sum + this.getSeatPrice(bus, code).price, 0);
+  },
+
   bookSeats(
     busId: string,
     seatCodes: string[],
@@ -323,19 +353,24 @@ export const fleetService = {
       pnr += chars.charAt(Math.floor(Math.random() * chars.length));
     }
 
-    const newBookings: BookedSeatRecord[] = seatCodes.map((seatCode) => ({
-      busId,
-      seatCode,
-      passengerName: passenger.name,
-      passengerPhone: passenger.phone,
-      passengerEmail: passenger.email,
-      pnr,
-      bookingDate: 'Just now',
-      fare: passenger.fare,
-      boardingPoint: passenger.boardingPoint,
-      droppingPoint: passenger.droppingPoint,
-      status: 'CONFIRMED',
-    }));
+    const currentBus = this.getBusById(busId) || ({ basePrice: passenger.fare } as BusData);
+
+    const newBookings: BookedSeatRecord[] = seatCodes.map((seatCode) => {
+      const seatPricing = this.getSeatPrice(currentBus, seatCode);
+      return {
+        busId,
+        seatCode,
+        passengerName: passenger.name,
+        passengerPhone: passenger.phone,
+        passengerEmail: passenger.email,
+        pnr,
+        bookingDate: 'Just now',
+        fare: seatPricing.price,
+        boardingPoint: passenger.boardingPoint,
+        droppingPoint: passenger.droppingPoint,
+        status: 'CONFIRMED',
+      };
+    });
 
     all.push(...newBookings);
     this.saveBookings(all);
@@ -344,11 +379,37 @@ export const fleetService = {
     return { success: true, pnr };
   },
 
-  cancelBooking(pnr: string): boolean {
+  getRefundPolicy(fare: number, hoursBeforeDeparture: number = 30) {
+    let refundPercentage = 90;
+    let ruleName = '> 24 hrs prior to departure (Standard Cancellation)';
+    if (hoursBeforeDeparture < 12) {
+      refundPercentage = 50;
+      ruleName = '< 12 hrs prior to departure (Late Cancellation)';
+    } else if (hoursBeforeDeparture <= 24) {
+      refundPercentage = 75;
+      ruleName = '12 - 24 hrs prior to departure (Mid-window Cancellation)';
+    }
+
+    const cancellationCharge = Math.round((fare * (100 - refundPercentage)) / 100);
+    const refundAmount = fare - cancellationCharge;
+    return {
+      originalFare: fare,
+      refundPercentage,
+      cancellationCharge,
+      refundAmount,
+      ruleName,
+      refundMethod: 'Original Payment Source (Simulated UPI / NetBanking / Card)',
+      refundRef: `RFND-${Math.floor(100000 + Math.random() * 900000)}-UPI`,
+      estimatedTime: 'Within 5-15 minutes (Instant simulated credit)',
+    };
+  },
+
+  cancelBooking(pnr: string, seatCode?: string): boolean {
     const all = this.getAllBookings();
     let found = false;
     const updated = all.map((b) => {
-      if (b.pnr === pnr) {
+      const match = seatCode ? (b.pnr === pnr && b.seatCode === seatCode) : (b.pnr === pnr);
+      if (match && b.status !== 'CANCELLED') {
         found = true;
         return { ...b, status: 'CANCELLED' as const };
       }
@@ -356,7 +417,7 @@ export const fleetService = {
     });
     if (found) {
       this.saveBookings(updated);
-      window.dispatchEvent(new CustomEvent('rova_seats_updated', { detail: { pnr } }));
+      window.dispatchEvent(new CustomEvent('rova_seats_updated', { detail: { pnr, seatCode } }));
     }
     return found;
   },
